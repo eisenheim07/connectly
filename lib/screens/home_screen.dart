@@ -1,3 +1,4 @@
+import 'package:connectly/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -14,6 +15,7 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: Text('Home Screen'),
       ),
+      appBar: CustomAppBar(title: "Connectly"),
     );
   }
 }
