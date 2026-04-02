@@ -21,7 +21,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       child: AppBar(
-        backgroundColor: AppColors.surfaceContainerLow,
+        backgroundColor: AppColors.surface.withOpacity(0.1),
         automaticallyImplyLeading: false,
         leading: showBackButton
             ? IconButton(

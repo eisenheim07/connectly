@@ -15,6 +15,7 @@ class AppColors {
   static const Color surfaceBright = Color(0xFF393939);
 
   // Status Palette
+  static const Color primary = Color(0xFF0066FF); // Primary blue
   static const Color secondary = Color(0xFF53E16F); // Connected state
   static const Color tertiary = Color(0xFFFFB4AA); // Reconnecting/Warning
   static const Color error = Color(0xFFFFB4AB); // Disconnected/Failed
