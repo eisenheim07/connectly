@@ -48,60 +48,73 @@ class _PermissionScreenState extends State<PermissionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: BlocListener<PermissionCubit, PermissionState>(
-        listener: (context, state) {
-          if (state is PermissionsGrantedState && state.cameraGranted && !_isCameraInitialized) {
-            _initializeCamera();
-          }
-        },
-        child: BlocBuilder<PermissionCubit, PermissionState>(
-          builder: (context, state) {
-            final permissionStatus = state is PermissionsGrantedState
-                ? state
-                : const PermissionsGrantedState(cameraGranted: false, microphoneGranted: false);
-
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(),
-                    const SizedBox(height: 48.0),
-                    _buildPermissionCard(
-                      context: context,
-                      icon: Icons.videocam,
-                      iconColor: AppColors.secondary,
-                      title: 'Camera Access',
-                      description: 'Required for high-definition video broadcasting. Your feed is encrypted end-to-end.',
-                      isGranted: permissionStatus.cameraGranted,
-                      onPressed: () {
-                        context.read<PermissionCubit>().requestCameraPermission();
-                      },
-                    ),
-                    const SizedBox(height: 24.0),
-                    _buildPermissionCard(
-                      context: context,
-                      icon: Icons.mic,
-                      iconColor: AppColors.secondary,
-                      title: 'Microphone Access',
-                      description: 'Enables high-fidelity spatial audio and active noise cancellation during your call.',
-                      isGranted: permissionStatus.microphoneGranted,
-                      onPressed: () {
-                        context.read<PermissionCubit>().requestMicrophonePermission();
-                      },
-                    ),
-                    const SizedBox(height: 48.0),
-                    _buildPreviewSection(permissionStatus),
-                    const SizedBox(height: 48.0),
-                    _buildContinueButton(context, permissionStatus),
-                  ],
-                ),
-              ),
-            );
+    return WillPopScope(
+      onWillPop: () async {
+        // Allow back navigation to close the app from permission screen
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.surface,
+        body: BlocListener<PermissionCubit, PermissionState>(
+          listener: (context, state) {
+            if (state is PermissionsGrantedState && state.cameraGranted && !_isCameraInitialized) {
+              _initializeCamera();
+            }
           },
+          child: BlocBuilder<PermissionCubit, PermissionState>(
+            builder: (context, state) {
+              final permissionStatus = state is PermissionsGrantedState
+                  ? state
+                  : const PermissionsGrantedState(cameraGranted: false, microphoneGranted: false);
+
+              return SafeArea(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 24.0,
+                      right: 24.0,
+                      top: 60.0,
+                      bottom: 60.0 + MediaQuery.of(context).padding.bottom,
+                    ),
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(),
+                      const SizedBox(height: 48.0),
+                      _buildPermissionCard(
+                        context: context,
+                        icon: Icons.videocam,
+                        iconColor: AppColors.secondary,
+                        title: 'Camera Access',
+                        description: 'Required for high-definition video broadcasting. Your feed is encrypted end-to-end.',
+                        isGranted: permissionStatus.cameraGranted,
+                        onPressed: () {
+                          context.read<PermissionCubit>().requestCameraPermission();
+                        },
+                      ),
+                      const SizedBox(height: 24.0),
+                      _buildPermissionCard(
+                        context: context,
+                        icon: Icons.mic,
+                        iconColor: AppColors.secondary,
+                        title: 'Microphone Access',
+                        description: 'Enables high-fidelity spatial audio and active noise cancellation during your call.',
+                        isGranted: permissionStatus.microphoneGranted,
+                        onPressed: () {
+                          context.read<PermissionCubit>().requestMicrophonePermission();
+                        },
+                      ),
+                      const SizedBox(height: 48.0),
+                      _buildPreviewSection(permissionStatus),
+                      const SizedBox(height: 48.0),
+                      _buildContinueButton(context, permissionStatus),
+                    ],
+                  ),
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

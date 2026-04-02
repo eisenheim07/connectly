@@ -7,8 +7,8 @@ plugins {
 
 android {
     namespace = "com.example.connectly"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 35
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -20,20 +20,16 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.connectly"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        minSdk = 21
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+        multiDexEnabled = true
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -41,4 +37,19 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Option A: Try JitPack first (comment out if using local AAR files)
+    // implementation("com.github.aws.amazon-chime-sdk-android:amazon-chime-sdk:0.25.3")
+    // implementation("com.github.aws.amazon-chime-sdk-android:amazon-chime-sdk-media:0.25.3")
+    
+    // Option B: Local AAR files (place AAR files in android/app/libs/)
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+    
+    // Required dependencies
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+    implementation("androidx.multidex:multidex:2.0.1")
+    implementation("com.google.code.gson:gson:2.10.1")
 }

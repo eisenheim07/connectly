@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/meeting_cubit.dart';
@@ -6,52 +8,167 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/button_widget.dart';
+import '../widgets/shimmer_loading.dart';
+import 'video_call_screen.dart';
 
 class MeetingScreen extends StatelessWidget {
   const MeetingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
+    return WillPopScope(
+      onWillPop: () async {
+        // Allow back to close app from home screen
+        return true;
       },
-      child: Scaffold(
-        backgroundColor: AppColors.surface,
-        appBar: const CustomAppBar(title: 'Connectly', showBackButton: false),
-        body: BlocConsumer<MeetingCubit, MeetingState>(
-          listener: (context, state) {
-            if (state is MeetingError) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
-            }
-          },
-          builder: (context, state) {
-            if (state is MeetingLoading) {
-              return const Center(child: CircularProgressIndicator(color: AppColors.secondary));
-            }
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.surface,
+          appBar: const CustomAppBar(title: 'Connectly', showBackButton: false),
+          body: BlocConsumer<MeetingCubit, MeetingState>(
+            listener: (context, state) {
+              if (state is MeetingError) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
+              }
 
-            if (state is MeetingCreated) {
-              return _buildMeetingCreatedView(context, state);
-            }
+              if (state is MeetingCreated) {
+                _showMeetingCreatedBottomSheet(context, state);
+              }
+            },
+            builder: (context, state) {
+              if (state is MeetingLoading) {
+                return const ShimmerLoading();
+              }
 
-            if (state is MeetingJoined) {
-              return _buildMeetingJoinedView(context, state);
-            }
+              if (state is MeetingJoined) {
+                return _buildMeetingJoinedView(context, state);
+              }
 
-            return _buildMainContent(context);
-          },
+              return _buildMainContent(context);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showMeetingCreatedBottomSheet(BuildContext context, MeetingCreated state) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (bottomSheetContext) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.surfaceContainerLow,
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+          ),
+          padding: EdgeInsets.only(left: 32.0, right: 32.0, top: 32.0, bottom: 32.0 + MediaQuery.of(bottomSheetContext).padding.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40.0,
+                height: 4.0,
+                decoration: BoxDecoration(color: AppColors.onSurfaceVariant.withOpacity(0.3), borderRadius: BorderRadius.circular(2.0)),
+              ),
+              const SizedBox(height: 32.0),
+              Container(
+                width: 80.0,
+                height: 80.0,
+                decoration: BoxDecoration(color: AppColors.secondary.withOpacity(0.1), shape: BoxShape.circle),
+                child: const Icon(Icons.check_circle, color: AppColors.secondary, size: 48.0),
+              ),
+              const SizedBox(height: 24.0),
+              Text('Meeting Created Successfully', style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8.0),
+              Text(
+                'Share this meeting ID with others to join',
+                style: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32.0),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1.0),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Meeting ID',
+                      style: AppTypography.labelMedium.copyWith(color: AppColors.onSurfaceVariant, fontSize: 12.0, letterSpacing: 1.0),
+                    ),
+                    const SizedBox(height: 8.0),
+                    SelectableText(
+                      state.meetingResponse.data.meeting.meetingId,
+                      style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButtonWidget(text: 'Copy ID', onPressed: () {}, icon: Icons.copy),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    flex: 2,
+                    child: PrimaryButton(
+                      text: 'Start Call',
+                      onPressed: () {
+                        // Close bottom sheet
+                        Navigator.pop(bottomSheetContext);
+                        
+                        // Trigger loading state
+                        context.read<MeetingCubit>().setLoading();
+                        
+                        // Navigate after delay
+                        Future.delayed(const Duration(milliseconds: 1500), () {
+                          if (context.mounted) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse),
+                              ),
+                            ).then((_) {
+                              // Reset to initial state when returning from video call
+                              context.read<MeetingCubit>().reset();
+                            });
+                          }
+                        });
+                      },
+                      icon: Icons.videocam,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16.0),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildMainContent(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [_buildHeroSection(context), const SizedBox(height: 40.0), _buildRecentMeetingsSection()],
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 24.0 + MediaQuery.of(context).padding.bottom),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [_buildHeroSection(context), const SizedBox(height: 40.0), _buildRecentMeetingsSection()],
+          ),
         ),
       ),
     );
@@ -333,45 +450,6 @@ class MeetingScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMeetingCreatedView(BuildContext context, MeetingCreated state) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.check_circle, color: AppColors.secondary, size: 80.0),
-            const SizedBox(height: 24.0),
-            Text('Meeting Created', style: AppTypography.headlineSmall),
-            const SizedBox(height: 16.0),
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(color: AppColors.surfaceContainerLow, borderRadius: BorderRadius.circular(12.0)),
-              child: Column(
-                children: [
-                  Text('Meeting ID', style: AppTypography.labelMedium.copyWith(color: AppColors.onSurfaceVariant)),
-                  const SizedBox(height: 8.0),
-                  SelectableText(state.meetingResponse.data.meeting.meetingId, style: AppTypography.titleMedium),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24.0),
-            Text('Share this ID with others to join', style: AppTypography.bodySmall, textAlign: TextAlign.center),
-            const SizedBox(height: 40.0),
-            PrimaryButton(
-              text: 'Start Call',
-              onPressed: () {
-                // TODO: Navigate to video call screen
-              },
-              width: 200.0,
-              height: 56.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildMeetingJoinedView(BuildContext context, MeetingJoined state) {
     return Center(
       child: Padding(
@@ -386,7 +464,7 @@ class MeetingScreen extends StatelessWidget {
             PrimaryButton(
               text: 'Join Call',
               onPressed: () {
-                // TODO: Navigate to video call screen
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse)));
               },
               width: 200.0,
               height: 56.0,

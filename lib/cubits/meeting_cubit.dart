@@ -39,6 +39,14 @@ class MeetingCubit extends Cubit<MeetingState> {
     }
   }
 
+  void setLoading() {
+    emit(const MeetingLoading());
+  }
+
+  void reset() {
+    emit(const MeetingInitial());
+  }
+
   @override
   Future<void> close() {
     _repository.dispose();
