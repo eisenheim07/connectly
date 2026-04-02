@@ -1,0 +1,47 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../repositories/meeting_repository.dart';
+import 'meeting_state.dart';
+
+class MeetingCubit extends Cubit<MeetingState> {
+  final MeetingRepository _repository;
+
+  MeetingCubit({MeetingRepository? repository})
+      : _repository = repository ?? MeetingRepository(),
+        super(const MeetingInitial());
+
+  Future<void> createMeeting() async {
+    emit(const MeetingLoading());
+    try {
+      final response = await _repository.createAgentMeeting();
+      emit(MeetingCreated(response));
+    } catch (e) {
+      emit(MeetingError(e.toString()));
+    }
+  }
+
+  Future<void> joinAsClient(String meetingId) async {
+    emit(const MeetingLoading());
+    try {
+      final response = await _repository.joinAsClient(meetingId);
+      emit(MeetingJoined(response));
+    } catch (e) {
+      emit(MeetingError(e.toString()));
+    }
+  }
+
+  Future<void> joinAsAgent(String meetingId) async {
+    emit(const MeetingLoading());
+    try {
+      final response = await _repository.joinAsAgent(meetingId);
+      emit(MeetingJoined(response));
+    } catch (e) {
+      emit(MeetingError(e.toString()));
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _repository.dispose();
+    return super.close();
+  }
+}

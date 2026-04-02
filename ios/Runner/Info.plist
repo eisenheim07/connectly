@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is required for high-definition video broadcasting during calls. Your feed is encrypted end-to-end.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is required for high-fidelity spatial audio and active noise cancellation during your call.</string>
 </dict>
 </plist>

@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'cubits/splash_cubit.dart';
+import 'cubits/meeting_cubit.dart';
+import 'cubits/permission_cubit.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +22,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => SplashCubit())],
+      providers: [
+        BlocProvider(create: (context) => SplashCubit()),
+        BlocProvider(create: (context) => MeetingCubit()),
+        BlocProvider(create: (context) => PermissionCubit()),
+      ],
       child: MaterialApp(
         title: 'Connectly',
         debugShowCheckedModeBanner: false,
