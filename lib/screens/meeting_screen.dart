@@ -5,36 +5,42 @@ import '../cubits/meeting_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/button_widget.dart';
 
 class MeetingScreen extends StatelessWidget {
   const MeetingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      appBar: const CustomAppBar(title: 'Connectly', showBackButton: false),
-      body: BlocConsumer<MeetingCubit, MeetingState>(
-        listener: (context, state) {
-          if (state is MeetingError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
-          }
-        },
-        builder: (context, state) {
-          if (state is MeetingLoading) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.secondary));
-          }
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.surface,
+        appBar: const CustomAppBar(title: 'Connectly', showBackButton: false),
+        body: BlocConsumer<MeetingCubit, MeetingState>(
+          listener: (context, state) {
+            if (state is MeetingError) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
+            }
+          },
+          builder: (context, state) {
+            if (state is MeetingLoading) {
+              return const Center(child: CircularProgressIndicator(color: AppColors.secondary));
+            }
 
-          if (state is MeetingCreated) {
-            return _buildMeetingCreatedView(context, state);
-          }
+            if (state is MeetingCreated) {
+              return _buildMeetingCreatedView(context, state);
+            }
 
-          if (state is MeetingJoined) {
-            return _buildMeetingJoinedView(context, state);
-          }
+            if (state is MeetingJoined) {
+              return _buildMeetingJoinedView(context, state);
+            }
 
-          return _buildMainContent(context);
-        },
+            return _buildMainContent(context);
+          },
+        ),
       ),
     );
   }
@@ -118,22 +124,15 @@ class MeetingScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 32.0),
-                ElevatedButton.icon(
+                PrimaryButton(
+                  text: 'Start New Meeting',
                   onPressed: () {
                     context.read<MeetingCubit>().createMeeting();
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.onSurface,
-                    foregroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
-                    elevation: 0,
-                  ),
-                  icon: const Icon(Icons.videocam, size: 24.0),
-                  label: Text(
-                    'Start New Meeting',
-                    style: AppTypography.labelMedium.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 14.0),
-                  ),
+                  icon: Icons.videocam,
+                  backgroundColor: AppColors.onSurface,
+                  textColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
                 ),
               ],
             ),
@@ -175,27 +174,15 @@ class MeetingScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16.0),
-          SizedBox(
+          OutlinedButtonWidget(
+            text: 'Join Meeting',
+            onPressed: () {
+              final meetingId = meetingIdController.text.trim();
+              if (meetingId.isNotEmpty) {
+                context.read<MeetingCubit>().joinAsClient(meetingId);
+              }
+            },
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                final meetingId = meetingIdController.text.trim();
-                if (meetingId.isNotEmpty) {
-                  context.read<MeetingCubit>().joinAsClient(meetingId);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.surface,
-                foregroundColor: AppColors.onSurface,
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100.0),
-                  side: BorderSide(color: AppColors.outlineVariant.withOpacity(0.2), width: 1.0),
-                ),
-                elevation: 0,
-              ),
-              child: Text('Join Meeting', style: AppTypography.labelMedium.copyWith(fontWeight: FontWeight.bold)),
-            ),
           ),
         ],
       ),
@@ -209,13 +196,7 @@ class MeetingScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Recent Meetings', style: AppTypography.titleMedium.copyWith(fontSize: 20.0, fontWeight: FontWeight.bold)),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'View History',
-                style: AppTypography.labelMedium.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
-              ),
-            ),
+            TextButtonWidget(text: 'View History', onPressed: () {}),
           ],
         ),
         const SizedBox(height: 24.0),
@@ -377,16 +358,13 @@ class MeetingScreen extends StatelessWidget {
             const SizedBox(height: 24.0),
             Text('Share this ID with others to join', style: AppTypography.bodySmall, textAlign: TextAlign.center),
             const SizedBox(height: 40.0),
-            ElevatedButton(
+            PrimaryButton(
+              text: 'Start Call',
               onPressed: () {
                 // TODO: Navigate to video call screen
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondary,
-                foregroundColor: AppColors.onSecondary,
-                minimumSize: const Size(200.0, 56.0),
-              ),
-              child: Text('Start Call', style: AppTypography.labelMedium.copyWith(color: AppColors.onSecondary)),
+              width: 200.0,
+              height: 56.0,
             ),
           ],
         ),
@@ -405,16 +383,13 @@ class MeetingScreen extends StatelessWidget {
             const SizedBox(height: 24.0),
             Text('Ready to Join', style: AppTypography.headlineSmall),
             const SizedBox(height: 40.0),
-            ElevatedButton(
+            PrimaryButton(
+              text: 'Join Call',
               onPressed: () {
                 // TODO: Navigate to video call screen
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondary,
-                foregroundColor: AppColors.onSecondary,
-                minimumSize: const Size(200.0, 56.0),
-              ),
-              child: Text('Join Call', style: AppTypography.labelMedium.copyWith(color: AppColors.onSecondary)),
+              width: 200.0,
+              height: 56.0,
             ),
           ],
         ),

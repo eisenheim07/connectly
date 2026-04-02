@@ -5,6 +5,7 @@ import '../cubits/permission_cubit.dart';
 import '../cubits/permission_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../widgets/button_widget.dart';
 import 'meeting_screen.dart';
 
 class PermissionScreen extends StatefulWidget {
@@ -158,32 +159,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
           const SizedBox(height: 8.0),
           Text(description, style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 24.0),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: isGranted ? null : onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isGranted ? AppColors.surfaceContainerHigh : AppColors.secondary,
-                foregroundColor: isGranted ? AppColors.onSurfaceVariant : AppColors.onSecondary,
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (isGranted) const Icon(Icons.check_circle, size: 20.0) else const Icon(Icons.lock_open, size: 20.0),
-                  const SizedBox(width: 8.0),
-                  Text(
-                    isGranted ? 'Access Granted' : 'Allow $title',
-                    style: AppTypography.labelMedium.copyWith(
-                      color: isGranted ? AppColors.onSurfaceVariant : AppColors.onSecondary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          PermissionButton(text: isGranted ? 'Access Granted' : 'Allow $title', onPressed: onPressed, isGranted: isGranted),
         ],
       ),
     );
@@ -258,35 +234,19 @@ class _PermissionScreenState extends State<PermissionScreen> {
   Widget _buildContinueButton(BuildContext context, PermissionsGrantedState status) {
     return Column(
       children: [
-        SizedBox(
+        PrimaryButton(
+          text: 'Enter Meeting Space',
+          onPressed: status.allGranted
+              ? () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const MeetingScreen()));
+                }
+              : null,
+          icon: Icons.rocket_launch,
+          backgroundColor: status.allGranted ? AppColors.secondary : AppColors.surfaceContainerHigh,
+          textColor: status.allGranted ? AppColors.onSecondary : AppColors.onSurfaceVariant,
+          borderRadius: 12.0,
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: status.allGranted
-                ? () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const MeetingScreen()));
-                  }
-                : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: status.allGranted ? AppColors.secondary : AppColors.surfaceContainerHigh,
-              foregroundColor: status.allGranted ? AppColors.onSecondary : AppColors.onSurfaceVariant,
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.rocket_launch, color: status.allGranted ? AppColors.onSecondary : AppColors.onSurfaceVariant.withOpacity(0.4)),
-                const SizedBox(width: 12.0),
-                Text(
-                  'Enter Meeting Space',
-                  style: AppTypography.labelMedium.copyWith(
-                    color: status.allGranted ? AppColors.onSecondary : AppColors.onSurfaceVariant,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
         const SizedBox(height: 16.0),
         Text(
