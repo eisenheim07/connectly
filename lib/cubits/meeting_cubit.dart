@@ -29,10 +29,40 @@ class MeetingCubit extends Cubit<MeetingState> {
     }
   }
 
+  Future<void> joinAsClientWithMediaPlacement(String meetingId, String mediaPlacementJson) async {
+    emit(const MeetingLoading());
+    try {
+      final response = await _repository.joinAsClientWithMediaPlacement(meetingId, mediaPlacementJson);
+      emit(MeetingJoined(response));
+    } catch (e) {
+      emit(MeetingError(e.toString()));
+    }
+  }
+
+  Future<void> joinAsClientWithFullResponse(String fullApiResponse) async {
+    emit(const MeetingLoading());
+    try {
+      final response = await _repository.joinAsClientWithFullResponse(fullApiResponse);
+      emit(MeetingJoined(response));
+    } catch (e) {
+      emit(MeetingError(e.toString()));
+    }
+  }
+
   Future<void> joinAsAgent(String meetingId) async {
     emit(const MeetingLoading());
     try {
       final response = await _repository.joinAsAgent(meetingId);
+      emit(MeetingJoined(response));
+    } catch (e) {
+      emit(MeetingError(e.toString()));
+    }
+  }
+
+  Future<void> joinWithMeetingDetails(String meetingDetailsJson) async {
+    emit(const MeetingLoading());
+    try {
+      final response = await _repository.joinWithMeetingDetails(meetingDetailsJson);
       emit(MeetingJoined(response));
     } catch (e) {
       emit(MeetingError(e.toString()));

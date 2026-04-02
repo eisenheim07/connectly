@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/meeting_cubit.dart';
 import '../cubits/meeting_state.dart';
@@ -11,8 +12,23 @@ import '../widgets/button_widget.dart';
 import '../widgets/shimmer_loading.dart';
 import 'video_call_screen.dart';
 
-class MeetingScreen extends StatelessWidget {
+class MeetingScreen extends StatefulWidget {
   const MeetingScreen({super.key});
+
+  @override
+  State<MeetingScreen> createState() => _MeetingScreenState();
+}
+
+class _MeetingScreenState extends State<MeetingScreen> {
+  final TextEditingController _meetingIdController = TextEditingController();
+  final TextEditingController _mediaPlacementController = TextEditingController();
+
+  @override
+  void dispose() {
+    _meetingIdController.dispose();
+    _mediaPlacementController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +125,20 @@ class MeetingScreen extends StatelessWidget {
                     const SizedBox(height: 8.0),
                     SelectableText(
                       state.meetingResponse.data.meeting.meetingId,
-                      style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                      style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5, fontSize: 14.0),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16.0),
+                    Divider(color: AppColors.onSurfaceVariant.withOpacity(0.2)),
+                    const SizedBox(height: 16.0),
+                    Text(
+                      'Audio Host ID',
+                      style: AppTypography.labelMedium.copyWith(color: AppColors.onSurfaceVariant, fontSize: 12.0, letterSpacing: 1.0),
+                    ),
+                    const SizedBox(height: 8.0),
+                    SelectableText(
+                      state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? 'N/A',
+                      style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5, fontSize: 14.0),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -119,7 +148,24 @@ class MeetingScreen extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButtonWidget(text: 'Copy ID', onPressed: () {}, icon: Icons.copy),
+                    child: OutlinedButtonWidget(
+                      text: 'Copy Details',
+                      onPressed: () {
+                        final meetingId = state.meetingResponse.data.meeting.meetingId;
+                        final audioHostId = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? '';
+                        final copyText = '{"meetingId":"$meetingId","audioHostId":"$audioHostId"}';
+                        
+                        Clipboard.setData(ClipboardData(text: copyText));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Meeting details copied to clipboard'),
+                            backgroundColor: AppColors.secondary,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      icon: Icons.copy,
+                    ),
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(
@@ -260,10 +306,8 @@ class MeetingScreen extends StatelessWidget {
   }
 
   Widget _buildJoinMeetingCard(BuildContext context) {
-    final TextEditingController meetingIdController = TextEditingController();
-
     return Container(
-      constraints: const BoxConstraints(minHeight: 320.0),
+      constraints: const BoxConstraints(minHeight: 380.0),
       padding: const EdgeInsets.all(40.0),
       decoration: BoxDecoration(color: AppColors.surfaceContainerLow, borderRadius: BorderRadius.circular(16.0)),
       child: Column(
@@ -272,14 +316,15 @@ class MeetingScreen extends StatelessWidget {
         children: [
           Text('Join a Meeting', style: AppTypography.titleMedium.copyWith(fontSize: 20.0, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8.0),
-          Text('Enter a code or link provided by the organizer.', style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant)),
+          Text('Paste meeting details below', style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 24.0),
           TextField(
-            controller: meetingIdController,
-            style: AppTypography.bodyMedium,
+            controller: _mediaPlacementController,
+            style: AppTypography.bodyMedium.copyWith(fontSize: 12.0),
+            maxLines: 3,
             decoration: InputDecoration(
-              hintText: 'Enter code (e.g. abc-def-ghi)',
-              hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant.withOpacity(0.5)),
+              hintText: '{"meetingId":"...","audioHostId":"..."}',
+              hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant.withOpacity(0.5), fontSize: 11.0),
               filled: true,
               fillColor: AppColors.surfaceContainerHighest,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
@@ -294,10 +339,20 @@ class MeetingScreen extends StatelessWidget {
           OutlinedButtonWidget(
             text: 'Join Meeting',
             onPressed: () {
-              final meetingId = meetingIdController.text.trim();
-              if (meetingId.isNotEmpty) {
-                context.read<MeetingCubit>().joinAsClient(meetingId);
+              final meetingDetails = _mediaPlacementController.text.trim();
+              
+              if (meetingDetails.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please paste meeting details'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+                return;
               }
+              
+              // Join with meeting details
+              context.read<MeetingCubit>().joinWithMeetingDetails(meetingDetails);
             },
             width: double.infinity,
           ),
