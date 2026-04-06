@@ -136,7 +136,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
                     Text('Audio Host ID', style: AppTypography.labelMedium),
                     const SizedBox(height: 8.0),
                     SelectableText(
-                      state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? 'N/A',
+                      () {
+                        final audioHostUrl = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl ?? 'N/A';
+                        return audioHostUrl.contains(':') ? audioHostUrl.split(':').first : audioHostUrl;
+                      }(),
                       style: AppTypography.titleMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -151,7 +154,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
                       text: 'Copy Details',
                       onPressed: () {
                         final meetingId = state.meetingResponse.data.meeting.meetingId;
-                        final audioHostId = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? '';
+                        // Extract audioHostId without port (remove :3478)
+                        final audioHostUrl = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl ?? '';
+                        final audioHostId = audioHostUrl.contains(':') ? audioHostUrl.split(':').first : audioHostUrl;
                         final copyText = '{"meetingId":"$meetingId","audioHostId":"$audioHostId"}';
                         print("COPY_TEXT ===> $copyText");
 

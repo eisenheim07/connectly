@@ -96,6 +96,16 @@ class ChimeService {
       throw Exception('Failed to get attendees: ${e.message}');
     }
   }
+  
+  /// Rebind video tiles to current views (useful after view recreation)
+  Future<bool> rebindVideoTiles() async {
+    try {
+      final result = await _channel.invokeMethod('rebindVideoTiles');
+      return result == true;
+    } on PlatformException catch (e) {
+      throw Exception('Failed to rebind video tiles: ${e.message}');
+    }
+  }
 
   /// Dispose resources
   Future<void> dispose() async {

@@ -30,6 +30,10 @@ class ChimePlugin : FlutterPlugin, MethodCallHandler {
     private val logger = ConsoleLogger(LogLevel.INFO)
     private var videoViewFactory: ChimeVideoViewFactory? = null
     
+    // Track video tiles that need to be bound
+    private var localTileId: Int? = null
+    private var remoteTileId: Int? = null
+    
     companion object {
         private const val TAG = "ChimePlugin"
         private const val CHANNEL_NAME = "com.connectly/chime"
@@ -60,7 +64,35 @@ class ChimePlugin : FlutterPlugin, MethodCallHandler {
             "leaveMeeting" -> leaveMeeting(result)
             "getAttendees" -> getAttendees(result)
             "dispose" -> dispose(result)
+            "rebindVideoTiles" -> rebindVideoTiles(result)
             else -> result.notImplemented()
+        }
+    }
+    
+    private fun bindVideoTile(tileId: Int, isLocal: Boolean) {
+        val videoView = if (isLocal) {
+            videoViewFactory?.getLocalVideoView()
+        } else {
+            videoViewFactory?.getRemoteVideoView()
+        }
+        
+        videoView?.let { view ->
+            audioVideo?.bindVideoView(view.getVideoRenderView(), tileId)
+            Log.d(TAG, "✅ Video tile $tileId bound to ${if (isLocal) "local" else "remote"} view ${view.viewId}")
+        } ?: run {
+            Log.w(TAG, "⚠️ No video view available for tile $tileId (isLocal: $isLocal)")
+        }
+    }
+    
+    private fun rebindVideoTiles(result: Result) {
+        try {
+            Log.d(TAG, "Rebinding video tiles...")
+            localTileId?.let { bindVideoTile(it, true) }
+            remoteTileId?.let { bindVideoTile(it, false) }
+            result.success(true)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to rebind video tiles", e)
+            result.error("REBIND_ERROR", "Failed to rebind: ${e.message}", null)
         }
     }
 
@@ -182,19 +214,15 @@ class ChimePlugin : FlutterPlugin, MethodCallHandler {
                 override fun onVideoTileAdded(tileState: VideoTileState) {
                     Log.d(TAG, "Video tile added: ${tileState.tileId}, isLocal: ${tileState.isLocalTile}, attendeeId: ${tileState.attendeeId}")
                     
-                    // Bind video tile to the appropriate video view
-                    val videoView = if (tileState.isLocalTile) {
-                        videoViewFactory?.getLocalVideoView()
+                    // Store tile IDs for later binding
+                    if (tileState.isLocalTile) {
+                        localTileId = tileState.tileId
                     } else {
-                        videoViewFactory?.getRemoteVideoView()
+                        remoteTileId = tileState.tileId
                     }
                     
-                    videoView?.let { view ->
-                        audioVideo?.bindVideoView(view.getVideoRenderView(), tileState.tileId)
-                        Log.d(TAG, "Video tile ${tileState.tileId} bound to ${if (tileState.isLocalTile) "local" else "remote"} view")
-                    } ?: run {
-                        Log.w(TAG, "No video view available for tile ${tileState.tileId} (isLocal: ${tileState.isLocalTile})")
-                    }
+                    // Try to bind immediately
+                    bindVideoTile(tileState.tileId, tileState.isLocalTile)
                     
                     channel.invokeMethod("onVideoTileAdded", mapOf(
                         "tileId" to tileState.tileId,
@@ -205,6 +233,13 @@ class ChimePlugin : FlutterPlugin, MethodCallHandler {
 
                 override fun onVideoTileRemoved(tileState: VideoTileState) {
                     Log.d(TAG, "Video tile removed: ${tileState.tileId}")
+                    
+                    // Clear stored tile IDs
+                    if (tileState.isLocalTile) {
+                        localTileId = null
+                    } else {
+                        remoteTileId = null
+                    }
                     
                     // Unbind video tile
                     audioVideo?.unbindVideoView(tileState.tileId)

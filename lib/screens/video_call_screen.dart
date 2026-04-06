@@ -70,6 +70,11 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         print('🎥 Starting local video...');
         await _chimeService.startLocalVideo();
         print('🎥 Local video started');
+        
+        // Wait a bit for views to be created, then rebind tiles
+        await Future.delayed(const Duration(milliseconds: 500));
+        await _chimeService.rebindVideoTiles();
+        print('🎥 Video tiles rebound');
       } else {
         print('❌ Failed to initialize meeting');
       }
