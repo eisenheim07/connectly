@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/meeting_response.dart';
 import '../services/chime_service.dart';
+import '../services/network_resilience_manager.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../widgets/button_widget.dart';
 import '../widgets/chime_video_view.dart';
+import '../widgets/reconnection_banner.dart';
+import 'event_log_screen.dart';
 
 class VideoCallScreen extends StatefulWidget {
   final MeetingResponse meetingResponse;
@@ -19,18 +22,29 @@ class VideoCallScreen extends StatefulWidget {
 
 class _VideoCallScreenState extends State<VideoCallScreen> {
   final ChimeService _chimeService = ChimeService();
+  final NetworkResilienceManager _networkManager = NetworkResilienceManager();
 
   bool _isVideoEnabled = true;
   bool _isAudioMuted = false;
   bool _isInitialized = false;
   bool _showControls = true;
   String? _errorMessage;
+  NetworkConnectionState _connectionState = NetworkConnectionState.connected;
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     _initializeMeeting();
+    
+    // Listen to network state changes
+    _networkManager.stateStream.listen((state) {
+      if (mounted) {
+        setState(() {
+          _connectionState = state;
+        });
+      }
+    });
   }
 
   @override
@@ -66,12 +80,18 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       if (success && mounted) {
         setState(() {
           _isInitialized = true;
+          _showControls = true; // Ensure controls are visible
         });
-        print('🎥 Starting local video...');
+        print('🎥 Meeting initialized, starting local video...');
         await _chimeService.startLocalVideo();
         print('🎥 Local video started');
       } else {
         print('❌ Failed to initialize meeting');
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'Failed to initialize meeting. Please try again.';
+          });
+        }
       }
     } catch (e) {
       print('❌ Error initializing meeting: $e');
@@ -149,23 +169,32 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       onWillPop: _onWillPop,
       child: Scaffold(
         backgroundColor: AppColors.surface,
-        body: GestureDetector(
-          onTap: _toggleControls,
-          child: Stack(
-            children: [
-              // Video View Container
-              _buildVideoView(),
+        body: Stack(
+          children: [
+            // Video View Container
+            GestureDetector(
+              onTap: _toggleControls,
+              child: _buildVideoView(),
+            ),
 
-              // Top Bar
-              if (_showControls) _buildTopBar(),
+            // Reconnection Banner (at top)
+            if (_isInitialized)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: ReconnectionBanner(connectionState: _connectionState),
+              ),
 
-              // Bottom Controls
-              if (_showControls) _buildBottomControls(),
+            // Top Bar
+            if (_isInitialized && _showControls) _buildTopBar(),
 
-              // Loading/Error Overlay
-              if (!_isInitialized) _buildLoadingOverlay(),
-            ],
-          ),
+            // Bottom Controls
+            if (_isInitialized && _showControls) _buildBottomControls(),
+
+            // Loading/Error Overlay
+            if (!_isInitialized) _buildLoadingOverlay(),
+          ],
         ),
       ),
     );
@@ -245,13 +274,28 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                 ],
               ),
             ),
-            IconButtonWidget(
-              icon: Icons.info_outline,
-              onPressed: () {
-                // Show meeting info
-              },
-              backgroundColor: AppColors.surface.withOpacity(0.6),
-              iconColor: AppColors.onSurface,
+            Row(
+              children: [
+                IconButtonWidget(
+                  icon: Icons.event_note,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const EventLogScreen()),
+                    );
+                  },
+                  backgroundColor: AppColors.surface.withOpacity(0.6),
+                  iconColor: AppColors.onSurface,
+                ),
+                const SizedBox(width: 8),
+                IconButtonWidget(
+                  icon: Icons.info_outline,
+                  onPressed: () {
+                    // Show meeting info
+                  },
+                  backgroundColor: AppColors.surface.withOpacity(0.6),
+                  iconColor: AppColors.onSurface,
+                ),
+              ],
             ),
           ],
         ),
