@@ -39,8 +39,8 @@ class PrimaryButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: SizeUtils.getSize(20.0)),
-              SizedBox(width: SizeUtils.getSize(8.0)),
+              Icon(icon, size: SizeUtils.getSize(18.0)),
+              SizedBox(width: SizeUtils.getSize(6.0)),
               Flexible(
                 child: Text(
                   text,
@@ -74,6 +74,7 @@ class PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? AppColors.secondary,
           foregroundColor: textColor ?? AppColors.onSecondary,
+          padding: padding ?? EdgeInsets.symmetric(horizontal: SizeUtils.getSize(16.0), vertical: SizeUtils.getSize(12.0)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? SizeUtils.getSize(100.0))),
           disabledBackgroundColor: AppColors.surfaceContainerHigh,
           disabledForegroundColor: AppColors.onSurfaceVariant,
@@ -130,7 +131,7 @@ class OutlinedButtonWidget extends StatelessWidget {
                   style: AppTypography.labelMedium.copyWith(
                     color: textColor ?? AppColors.onSurface,
                     fontWeight: fontWeight ?? FontWeight.bold,
-                    fontSize: fontSize ?? SizeUtils.getFontSize(13.0),
+                    fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
                   ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,

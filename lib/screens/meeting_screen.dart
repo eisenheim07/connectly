@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectly/utils/app_constants.dart';
 import 'package:connectly/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import '../cubits/meeting_cubit.dart';
 import '../cubits/meeting_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../utils/size_utils.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/button_widget.dart';
 import '../widgets/shimmer_loading.dart';
@@ -40,7 +42,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
       },
       child: GestureDetector(
         onTap: () {
-          FocusScope.of(context).unfocus();
+          AppConstants.getKeyboardClose(context);
         },
         child: Scaffold(
           backgroundColor: AppColors.surface,
@@ -48,21 +50,26 @@ class _MeetingScreenState extends State<MeetingScreen> {
           body: BlocConsumer<MeetingCubit, MeetingState>(
             listener: (context, state) {
               if (state is MeetingError) {
-                // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
                 context.flushBarErrorMessage(message: state.message);
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   SnackBar(
+                //     content: Text(state.message),
+                //     backgroundColor: AppColors.error,
+                //   ),
+                // );
               }
 
               if (state is MeetingCreated) {
                 _showMeetingCreatedBottomSheet(context, state);
               }
+
+              if (state is MeetingJoined) {
+                _showJoinMeetingBottomSheet(context, state);
+              }
             },
             builder: (context, state) {
               if (state is MeetingLoading) {
                 return const ShimmerLoading();
-              }
-
-              if (state is MeetingJoined) {
-                return _buildMeetingJoinedView(context, state);
               }
 
               return _buildMainContent(context);
@@ -328,13 +335,17 @@ class _MeetingScreenState extends State<MeetingScreen> {
           OutlinedButtonWidget(
             text: 'Join Meeting',
             onPressed: () {
+              AppConstants.getKeyboardClose(context);
               final meetingDetails = _mediaPlacementController.text.trim();
 
               if (meetingDetails.isEmpty) {
                 context.flushBarErrorMessage(message: 'Please paste meeting details');
-                // ScaffoldMessenger.of(
-                //   context,
-                // ).showSnackBar(const SnackBar(content: Text('Please paste meeting details'), backgroundColor: AppColors.error));
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   const SnackBar(
+                //     content: Text('Please paste meeting details'),
+                //     backgroundColor: AppColors.error,
+                //   ),
+                // );
                 return;
               }
 
@@ -492,26 +503,111 @@ class _MeetingScreenState extends State<MeetingScreen> {
     );
   }
 
-  Widget _buildMeetingJoinedView(BuildContext context, MeetingJoined state) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.videocam, color: AppColors.secondary, size: 80.0),
-            const SizedBox(height: 24.0),
-            Text('Ready to Join', style: AppTypography.headlineSmall),
-            const SizedBox(height: 40.0),
-            PrimaryButton(
-              text: 'Join Call',
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse)));
-              },
-              width: 200.0,
-              height: 56.0,
+  void _showJoinMeetingBottomSheet(BuildContext context, MeetingJoined state) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (bottomSheetContext) => WillPopScope(
+        onWillPop: () async => false,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainerLow,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(SizeUtils.getSize(24.0)),
+                topRight: Radius.circular(SizeUtils.getSize(24.0)),
+              ),
             ),
-          ],
+            padding: EdgeInsets.only(
+              left: SizeUtils.getSize(32.0),
+              right: SizeUtils.getSize(32.0),
+              top: SizeUtils.getSize(32.0),
+              bottom: SizeUtils.getSize(32.0) + MediaQuery.of(bottomSheetContext).padding.bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: SizeUtils.getSize(40.0),
+                  height: SizeUtils.getSize(4.0),
+                  decoration: BoxDecoration(
+                    color: AppColors.onSurfaceVariant.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(SizeUtils.getSize(2.0)),
+                  ),
+                ),
+                SizedBox(height: SizeUtils.getSize(32.0)),
+                Container(
+                  width: SizeUtils.getSize(80.0),
+                  height: SizeUtils.getSize(80.0),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.videocam,
+                    color: AppColors.secondary,
+                    size: SizeUtils.getSize(48.0),
+                  ),
+                ),
+                SizedBox(height: SizeUtils.getSize(24.0)),
+                Text(
+                  'Ready to Join',
+                  style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: SizeUtils.getSize(8.0)),
+                Text(
+                  'You are about to join the video call',
+                  style: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: SizeUtils.getSize(32.0)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButtonWidget(
+                        text: 'Cancel',
+                        onPressed: () {
+                          Navigator.pop(bottomSheetContext);
+                          context.read<MeetingCubit>().reset();
+                        },
+                        icon: Icons.close,
+                      ),
+                    ),
+                    SizedBox(width: SizeUtils.getSize(16.0)),
+                    Expanded(
+                      flex: 2,
+                      child: PrimaryButton(
+                        text: 'Join Call',
+                        onPressed: () {
+                          Navigator.pop(bottomSheetContext);
+                          
+                          context.read<MeetingCubit>().setLoading();
+                          
+                          Future.delayed(const Duration(milliseconds: 1500), () {
+                            if (context.mounted) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse),
+                                ),
+                              ).then((_) {
+                                context.read<MeetingCubit>().reset();
+                              });
+                            }
+                          });
+                        },
+                        icon: Icons.videocam,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: SizeUtils.getSize(16.0)),
+              ],
+            ),
+          ),
         ),
       ),
     );
