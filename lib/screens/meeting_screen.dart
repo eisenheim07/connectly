@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectly/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,7 +48,8 @@ class _MeetingScreenState extends State<MeetingScreen> {
           body: BlocConsumer<MeetingCubit, MeetingState>(
             listener: (context, state) {
               if (state is MeetingError) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
+                // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
+                context.flushBarErrorMessage(message: state.message);
               }
 
               if (state is MeetingCreated) {
@@ -146,13 +148,14 @@ class _MeetingScreenState extends State<MeetingScreen> {
                         final copyText = '{"meetingId":"$meetingId","audioHostId":"$audioHostId"}';
 
                         Clipboard.setData(ClipboardData(text: copyText));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Meeting details copied to clipboard'),
-                            backgroundColor: AppColors.secondary,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
+                        context.flushBarSuccessMessage(message: 'Meeting details copied to clipboard');
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   const SnackBar(
+                        //     content: Text('Meeting details copied to clipboard'),
+                        //     backgroundColor: AppColors.secondary,
+                        //     duration: Duration(seconds: 2),
+                        //   ),
+                        // );
                       },
                       icon: Icons.copy,
                     ),
@@ -328,9 +331,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
               final meetingDetails = _mediaPlacementController.text.trim();
 
               if (meetingDetails.isEmpty) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('Please paste meeting details'), backgroundColor: AppColors.error));
+                context.flushBarErrorMessage(message: 'Please paste meeting details');
+                // ScaffoldMessenger.of(
+                //   context,
+                // ).showSnackBar(const SnackBar(content: Text('Please paste meeting details'), backgroundColor: AppColors.error));
                 return;
               }
 

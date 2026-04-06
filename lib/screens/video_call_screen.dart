@@ -1,3 +1,4 @@
+import 'package:connectly/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/meeting_response.dart';
@@ -51,15 +52,17 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       print('Attendee ID: ${widget.meetingResponse.data.attendee.attendeeId}');
       print('Media Region: ${widget.meetingResponse.data.meeting.mediaRegion}');
       print('Media Placement: ${widget.meetingResponse.data.meeting.mediaPlacement}');
-      
+
       // Check if we have all required data
       if (widget.meetingResponse.data.meeting.mediaPlacement == null) {
-        throw Exception('Meeting configuration incomplete. The backend API must return full meeting details including MediaPlacement when joining a meeting.');
+        throw Exception(
+          'Meeting configuration incomplete. The backend API must return full meeting details including MediaPlacement when joining a meeting.',
+        );
       }
-      
+
       final success = await _chimeService.initializeMeeting(widget.meetingResponse);
       print('🎥 Initialize result: $success');
-      
+
       if (success && mounted) {
         setState(() {
           _isInitialized = true;
@@ -74,7 +77,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       print('❌ Error initializing meeting: $e');
       if (mounted) {
         setState(() {
-          _errorMessage = 'Cannot join meeting: Backend API is not returning complete meeting configuration. Please contact support or try creating a new meeting instead.';
+          _errorMessage =
+              'Cannot join meeting: Backend API is not returning complete meeting configuration. Please contact support or try creating a new meeting instead.';
         });
       }
     }
@@ -129,9 +133,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     }
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.error));
-  }
+  void _showError(String message) => context.flushBarErrorMessage(message: message);
+
+  // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.error));
 
   void _toggleControls() {
     setState(() {
@@ -230,12 +234,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       left: 0,
       right: 0,
       child: Container(
-        padding: EdgeInsets.only(
-          left: 24.0,
-          right: 24.0,
-          top: 40.0,
-          bottom: 40.0 + MediaQuery.of(context).padding.bottom,
-        ),
+        padding: EdgeInsets.only(left: 24.0, right: 24.0, top: 40.0, bottom: 40.0 + MediaQuery.of(context).padding.bottom),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
