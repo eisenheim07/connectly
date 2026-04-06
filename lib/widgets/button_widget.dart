@@ -41,12 +41,16 @@ class PrimaryButton extends StatelessWidget {
             children: [
               Icon(icon, size: SizeUtils.getSize(20.0)),
               SizedBox(width: SizeUtils.getSize(8.0)),
-              Text(
-                text,
-                style: AppTypography.labelMedium.copyWith(
-                  color: textColor ?? AppColors.onSecondary,
-                  fontWeight: fontWeight ?? FontWeight.bold,
-                  fontSize: fontSize ?? SizeUtils.getFontSize(14.0),
+              Flexible(
+                child: Text(
+                  text,
+                  style: AppTypography.labelMedium.copyWith(
+                    color: textColor ?? AppColors.onSecondary,
+                    fontWeight: fontWeight ?? FontWeight.bold,
+                    fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
             ],
@@ -56,8 +60,10 @@ class PrimaryButton extends StatelessWidget {
             style: AppTypography.labelMedium.copyWith(
               color: textColor ?? AppColors.onSecondary,
               fontWeight: fontWeight ?? FontWeight.bold,
-              fontSize: fontSize ?? SizeUtils.getFontSize(14.0),
+              fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
             ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           );
 
     return SizedBox(
@@ -68,14 +74,7 @@ class PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? AppColors.secondary,
           foregroundColor: textColor ?? AppColors.onSecondary,
-          padding: padding ?? EdgeInsets.symmetric(
-            horizontal: SizeUtils.getSize(24.0),
-            vertical: SizeUtils.getSize(14.0),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius ?? SizeUtils.getSize(100.0)),
-          ),
-          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? SizeUtils.getSize(100.0))),
           disabledBackgroundColor: AppColors.surfaceContainerHigh,
           disabledForegroundColor: AppColors.onSurfaceVariant,
         ),
@@ -124,13 +123,17 @@ class OutlinedButtonWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: SizeUtils.getSize(18.0)),
-              SizedBox(width: SizeUtils.getSize(8.0)),
-              Text(
-                text,
-                style: AppTypography.labelMedium.copyWith(
-                  color: textColor ?? AppColors.onSurface,
-                  fontWeight: fontWeight ?? FontWeight.bold,
-                  fontSize: fontSize ?? SizeUtils.getFontSize(14.0),
+              SizedBox(width: SizeUtils.getSize(6.0)),
+              Flexible(
+                child: Text(
+                  text,
+                  style: AppTypography.labelMedium.copyWith(
+                    color: textColor ?? AppColors.onSurface,
+                    fontWeight: fontWeight ?? FontWeight.bold,
+                    fontSize: fontSize ?? SizeUtils.getFontSize(13.0),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
             ],
@@ -140,8 +143,10 @@ class OutlinedButtonWidget extends StatelessWidget {
             style: AppTypography.labelMedium.copyWith(
               color: textColor ?? AppColors.onSurface,
               fontWeight: fontWeight ?? FontWeight.bold,
-              fontSize: fontSize ?? SizeUtils.getFontSize(14.0),
+              fontSize: fontSize ?? SizeUtils.getFontSize(13.0),
             ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           );
 
     return SizedBox(
@@ -152,13 +157,10 @@ class OutlinedButtonWidget extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.surface,
           foregroundColor: textColor ?? AppColors.onSurface,
-          padding: padding ?? EdgeInsets.symmetric(vertical: SizeUtils.getSize(14.0)),
+          padding: padding ?? EdgeInsets.symmetric(horizontal: SizeUtils.getSize(16.0), vertical: SizeUtils.getSize(12.0)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius ?? SizeUtils.getSize(100.0)),
-            side: BorderSide(
-              color: borderColor ?? AppColors.outlineVariant.withOpacity(0.2),
-              width: borderWidth ?? 1.0,
-            ),
+            side: BorderSide(color: borderColor ?? AppColors.outlineVariant.withOpacity(0.2), width: borderWidth ?? 1.0),
           ),
           elevation: 0,
         ),
@@ -177,23 +179,13 @@ class TextButtonWidget extends StatelessWidget {
   final FontWeight? fontWeight;
   final EdgeInsetsGeometry? padding;
 
-  const TextButtonWidget({
-    super.key,
-    required this.text,
-    this.onPressed,
-    this.textColor,
-    this.fontSize,
-    this.fontWeight,
-    this.padding,
-  });
+  const TextButtonWidget({super.key, required this.text, this.onPressed, this.textColor, this.fontSize, this.fontWeight, this.padding});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: onPressed,
-      style: TextButton.styleFrom(
-        padding: padding ?? EdgeInsets.zero,
-      ),
+      style: TextButton.styleFrom(padding: padding ?? EdgeInsets.zero),
       child: Text(
         text,
         style: AppTypography.labelMedium.copyWith(
@@ -215,35 +207,20 @@ class IconButtonWidget extends StatelessWidget {
   final double? size;
   final double? iconSize;
 
-  const IconButtonWidget({
-    super.key,
-    required this.icon,
-    this.onPressed,
-    this.backgroundColor,
-    this.iconColor,
-    this.size,
-    this.iconSize,
-  });
+  const IconButtonWidget({super.key, required this.icon, this.onPressed, this.backgroundColor, this.iconColor, this.size, this.iconSize});
 
   @override
   Widget build(BuildContext context) {
     final buttonSize = size ?? SizeUtils.getSize(48.0);
     final buttonIconSize = iconSize ?? SizeUtils.getSize(24.0);
-    
+
     return Container(
       width: buttonSize,
       height: buttonSize,
-      decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.surfaceContainerLow,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: backgroundColor ?? AppColors.surfaceContainerLow, shape: BoxShape.circle),
       child: IconButton(
         onPressed: onPressed,
-        icon: Icon(
-          icon,
-          color: iconColor ?? AppColors.onSurface,
-          size: buttonIconSize,
-        ),
+        icon: Icon(icon, color: iconColor ?? AppColors.onSurface, size: buttonIconSize),
         padding: EdgeInsets.zero,
       ),
     );
@@ -257,13 +234,7 @@ class PermissionButton extends StatelessWidget {
   final bool isGranted;
   final IconData? icon;
 
-  const PermissionButton({
-    super.key,
-    required this.text,
-    this.onPressed,
-    required this.isGranted,
-    this.icon,
-  });
+  const PermissionButton({super.key, required this.text, this.onPressed, required this.isGranted, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -274,25 +245,25 @@ class PermissionButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isGranted ? AppColors.surfaceContainerHigh : AppColors.secondary,
           foregroundColor: isGranted ? AppColors.onSurfaceVariant : AppColors.onSecondary,
-          padding: EdgeInsets.symmetric(vertical: SizeUtils.getSize(14.0)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SizeUtils.getSize(100.0)),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: SizeUtils.getSize(16.0), vertical: SizeUtils.getSize(12.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SizeUtils.getSize(100.0))),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon ?? (isGranted ? Icons.check_circle : Icons.lock_open),
-              size: SizeUtils.getSize(20.0),
-            ),
+            Icon(icon ?? (isGranted ? Icons.check_circle : Icons.lock_open), size: SizeUtils.getSize(20.0)),
             SizedBox(width: SizeUtils.getSize(8.0)),
-            Text(
-              text,
-              style: AppTypography.labelMedium.copyWith(
-                color: isGranted ? AppColors.onSurfaceVariant : AppColors.onSecondary,
-                fontWeight: FontWeight.bold,
-                fontSize: SizeUtils.getFontSize(14.0),
+            Flexible(
+              child: Text(
+                text,
+                style: AppTypography.labelMedium.copyWith(
+                  color: isGranted ? AppColors.onSurfaceVariant : AppColors.onSecondary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: SizeUtils.getFontSize(14.0),
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],

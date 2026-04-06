@@ -110,35 +110,25 @@ class _MeetingScreenState extends State<MeetingScreen> {
               const SizedBox(height: 32.0),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1.0),
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Meeting ID',
-                      style: AppTypography.labelMedium.copyWith(color: AppColors.onSurfaceVariant, fontSize: 12.0, letterSpacing: 1.0),
-                    ),
+                    Text('Meeting ID', style: AppTypography.labelMedium),
                     const SizedBox(height: 8.0),
-                    SelectableText(
-                      state.meetingResponse.data.meeting.meetingId,
-                      style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5, fontSize: 14.0),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16.0),
+                    SelectableText(state.meetingResponse.data.meeting.meetingId, style: AppTypography.titleMedium, textAlign: TextAlign.center),
+                    const SizedBox(height: 8.0),
                     Divider(color: AppColors.onSurfaceVariant.withOpacity(0.2)),
-                    const SizedBox(height: 16.0),
-                    Text(
-                      'Audio Host ID',
-                      style: AppTypography.labelMedium.copyWith(color: AppColors.onSurfaceVariant, fontSize: 12.0, letterSpacing: 1.0),
-                    ),
+                    Text('Audio Host ID', style: AppTypography.labelMedium),
                     const SizedBox(height: 8.0),
                     SelectableText(
                       state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? 'N/A',
-                      style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5, fontSize: 14.0),
+                      style: AppTypography.titleMedium,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -154,7 +144,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
                         final meetingId = state.meetingResponse.data.meeting.meetingId;
                         final audioHostId = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? '';
                         final copyText = '{"meetingId":"$meetingId","audioHostId":"$audioHostId"}';
-                        
+
                         Clipboard.setData(ClipboardData(text: copyText));
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -169,24 +159,21 @@ class _MeetingScreenState extends State<MeetingScreen> {
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(
-                    flex: 2,
                     child: PrimaryButton(
                       text: 'Start Call',
                       onPressed: () {
                         // Close bottom sheet
                         Navigator.pop(bottomSheetContext);
-                        
+
                         // Trigger loading state
                         context.read<MeetingCubit>().setLoading();
-                        
+
                         // Navigate after delay
                         Future.delayed(const Duration(milliseconds: 1500), () {
                           if (context.mounted) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse),
-                              ),
-                            ).then((_) {
+                            Navigator.of(
+                              context,
+                            ).push(MaterialPageRoute(builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse))).then((_) {
                               // Reset to initial state when returning from video call
                               context.read<MeetingCubit>().reset();
                             });
@@ -295,7 +282,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
                   icon: Icons.videocam,
                   backgroundColor: AppColors.onSurface,
                   textColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
                 ),
               ],
             ),
@@ -340,17 +326,14 @@ class _MeetingScreenState extends State<MeetingScreen> {
             text: 'Join Meeting',
             onPressed: () {
               final meetingDetails = _mediaPlacementController.text.trim();
-              
+
               if (meetingDetails.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please paste meeting details'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('Please paste meeting details'), backgroundColor: AppColors.error));
                 return;
               }
-              
+
               // Join with meeting details
               context.read<MeetingCubit>().joinWithMeetingDetails(meetingDetails);
             },
