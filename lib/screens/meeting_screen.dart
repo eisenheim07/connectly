@@ -153,6 +153,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
                         final meetingId = state.meetingResponse.data.meeting.meetingId;
                         final audioHostId = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? '';
                         final copyText = '{"meetingId":"$meetingId","audioHostId":"$audioHostId"}';
+                        print("COPY_TEXT ===> $copyText");
 
                         Clipboard.setData(ClipboardData(text: copyText));
                         context.flushBarSuccessMessage(message: 'Meeting details copied to clipboard');

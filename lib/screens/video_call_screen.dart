@@ -172,7 +172,38 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   }
 
   Widget _buildVideoView() {
-    return const ChimeVideoView(isLocalVideo: false);
+    return Stack(
+      children: [
+        // Remote video (full screen)
+        const Positioned.fill(
+          child: ChimeVideoView(isLocalVideo: false),
+        ),
+        
+        // Local video (picture-in-picture)
+        Positioned(
+          top: 80.0,
+          right: 16.0,
+          child: Container(
+            width: 120.0,
+            height: 160.0,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: AppColors.secondary.withOpacity(0.3), width: 2.0),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.surface.withOpacity(0.3),
+                  blurRadius: 8.0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: const ChimeVideoView(isLocalVideo: true),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildTopBar() {

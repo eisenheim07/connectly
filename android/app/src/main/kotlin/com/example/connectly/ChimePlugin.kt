@@ -180,12 +180,20 @@ class ChimePlugin : FlutterPlugin, MethodCallHandler {
 
             audioVideo?.addVideoTileObserver(object : VideoTileObserver {
                 override fun onVideoTileAdded(tileState: VideoTileState) {
-                    Log.d(TAG, "Video tile added: ${tileState.tileId}, isLocal: ${tileState.isLocalTile}")
+                    Log.d(TAG, "Video tile added: ${tileState.tileId}, isLocal: ${tileState.isLocalTile}, attendeeId: ${tileState.attendeeId}")
                     
-                    // Bind video tile to the video view
-                    videoViewFactory?.getVideoView()?.let { videoView ->
-                        audioVideo?.bindVideoView(videoView.getVideoRenderView(), tileState.tileId)
-                        Log.d(TAG, "Video tile ${tileState.tileId} bound to view")
+                    // Bind video tile to the appropriate video view
+                    val videoView = if (tileState.isLocalTile) {
+                        videoViewFactory?.getLocalVideoView()
+                    } else {
+                        videoViewFactory?.getRemoteVideoView()
+                    }
+                    
+                    videoView?.let { view ->
+                        audioVideo?.bindVideoView(view.getVideoRenderView(), tileState.tileId)
+                        Log.d(TAG, "Video tile ${tileState.tileId} bound to ${if (tileState.isLocalTile) "local" else "remote"} view")
+                    } ?: run {
+                        Log.w(TAG, "No video view available for tile ${tileState.tileId} (isLocal: ${tileState.isLocalTile})")
                     }
                     
                     channel.invokeMethod("onVideoTileAdded", mapOf(
