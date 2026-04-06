@@ -1,26 +1,47 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class SizeUtils {
   static late double width;
   static late double height;
-  static late double textScaleFactor;
+  static late double scaleFactor;
 
   static void init(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     width = mediaQuery.size.width;
     height = mediaQuery.size.height;
-    textScaleFactor = mediaQuery.textScaleFactor;
+    
+    // Calculate scale factor based on a reference width (375 = iPhone SE/standard mobile)
+    // Clamp between 0.85 and 1.15 to prevent extreme scaling
+    scaleFactor = (width / 375).clamp(0.85, 1.15);
   }
 
   static double getWidth(double size) {
-    return (size / 375) * width;
+    return size * scaleFactor;
   }
 
   static double getHeight(double size) {
-    return (size / 812) * height;
+    return size * scaleFactor;
   }
 
   static double getFontSize(double size) {
-    return (size / 375) * width;
+    return size * scaleFactor;
+  }
+  
+  static double getSize(double size) {
+    return size * scaleFactor;
+  }
+  
+  static EdgeInsets getPadding(EdgeInsets padding) {
+    return EdgeInsets.only(
+      left: padding.left * scaleFactor,
+      top: padding.top * scaleFactor,
+      right: padding.right * scaleFactor,
+      bottom: padding.bottom * scaleFactor,
+    );
+  }
+  
+  static BorderRadius getBorderRadius(BorderRadius radius) {
+    return BorderRadius.circular(radius.topLeft.x * scaleFactor);
   }
 }

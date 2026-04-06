@@ -11,7 +11,7 @@ class AppTypography {
   // Display - Large scale status and countdowns
   static const TextStyle displayLarge = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 57.0,
+    fontSize: 48.0,
     fontWeight: FontWeight.w700,
     letterSpacing: -0.25,
     height: 1.12,
@@ -20,7 +20,7 @@ class AppTypography {
 
   static const TextStyle displayMedium = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 45.0,
+    fontSize: 36.0,
     fontWeight: FontWeight.w700,
     letterSpacing: 0,
     height: 1.16,
@@ -30,7 +30,7 @@ class AppTypography {
   // Headline - Participant names in call header
   static const TextStyle headlineSmall = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 24.0,
+    fontSize: 22.0,
     fontWeight: FontWeight.w600,
     letterSpacing: 0,
     height: 1.33,

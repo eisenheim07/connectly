@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../utils/size_utils.dart';
 
 /// Primary Button - Solid background with high emphasis
 class PrimaryButton extends StatelessWidget {
@@ -38,14 +39,14 @@ class PrimaryButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 24.0),
-              const SizedBox(width: 8.0),
+              Icon(icon, size: SizeUtils.getSize(20.0)),
+              SizedBox(width: SizeUtils.getSize(8.0)),
               Text(
                 text,
                 style: AppTypography.labelMedium.copyWith(
                   color: textColor ?? AppColors.onSecondary,
                   fontWeight: fontWeight ?? FontWeight.bold,
-                  fontSize: fontSize ?? 14.0,
+                  fontSize: fontSize ?? SizeUtils.getFontSize(14.0),
                 ),
               ),
             ],
@@ -55,7 +56,7 @@ class PrimaryButton extends StatelessWidget {
             style: AppTypography.labelMedium.copyWith(
               color: textColor ?? AppColors.onSecondary,
               fontWeight: fontWeight ?? FontWeight.bold,
-              fontSize: fontSize ?? 14.0,
+              fontSize: fontSize ?? SizeUtils.getFontSize(14.0),
             ),
           );
 
@@ -67,9 +68,12 @@ class PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? AppColors.secondary,
           foregroundColor: textColor ?? AppColors.onSecondary,
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+          padding: padding ?? EdgeInsets.symmetric(
+            horizontal: SizeUtils.getSize(24.0),
+            vertical: SizeUtils.getSize(14.0),
+          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius ?? 100.0),
+            borderRadius: BorderRadius.circular(borderRadius ?? SizeUtils.getSize(100.0)),
           ),
           elevation: 0,
           disabledBackgroundColor: AppColors.surfaceContainerHigh,
@@ -119,14 +123,14 @@ class OutlinedButtonWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 20.0),
-              const SizedBox(width: 8.0),
+              Icon(icon, size: SizeUtils.getSize(18.0)),
+              SizedBox(width: SizeUtils.getSize(8.0)),
               Text(
                 text,
                 style: AppTypography.labelMedium.copyWith(
                   color: textColor ?? AppColors.onSurface,
                   fontWeight: fontWeight ?? FontWeight.bold,
-                  fontSize: fontSize ?? 14.0,
+                  fontSize: fontSize ?? SizeUtils.getFontSize(14.0),
                 ),
               ),
             ],
@@ -136,7 +140,7 @@ class OutlinedButtonWidget extends StatelessWidget {
             style: AppTypography.labelMedium.copyWith(
               color: textColor ?? AppColors.onSurface,
               fontWeight: fontWeight ?? FontWeight.bold,
-              fontSize: fontSize ?? 14.0,
+              fontSize: fontSize ?? SizeUtils.getFontSize(14.0),
             ),
           );
 
@@ -148,9 +152,9 @@ class OutlinedButtonWidget extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.surface,
           foregroundColor: textColor ?? AppColors.onSurface,
-          padding: padding ?? const EdgeInsets.symmetric(vertical: 16.0),
+          padding: padding ?? EdgeInsets.symmetric(vertical: SizeUtils.getSize(14.0)),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius ?? 100.0),
+            borderRadius: BorderRadius.circular(borderRadius ?? SizeUtils.getSize(100.0)),
             side: BorderSide(
               color: borderColor ?? AppColors.outlineVariant.withOpacity(0.2),
               width: borderWidth ?? 1.0,
@@ -195,7 +199,7 @@ class TextButtonWidget extends StatelessWidget {
         style: AppTypography.labelMedium.copyWith(
           color: textColor ?? AppColors.primary,
           fontWeight: fontWeight ?? FontWeight.w600,
-          fontSize: fontSize ?? 12.0,
+          fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
         ),
       ),
     );
@@ -223,9 +227,12 @@ class IconButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final buttonSize = size ?? SizeUtils.getSize(48.0);
+    final buttonIconSize = iconSize ?? SizeUtils.getSize(24.0);
+    
     return Container(
-      width: size ?? 48.0,
-      height: size ?? 48.0,
+      width: buttonSize,
+      height: buttonSize,
       decoration: BoxDecoration(
         color: backgroundColor ?? AppColors.surfaceContainerLow,
         shape: BoxShape.circle,
@@ -235,7 +242,7 @@ class IconButtonWidget extends StatelessWidget {
         icon: Icon(
           icon,
           color: iconColor ?? AppColors.onSurface,
-          size: iconSize ?? 24.0,
+          size: buttonIconSize,
         ),
         padding: EdgeInsets.zero,
       ),
@@ -267,9 +274,9 @@ class PermissionButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isGranted ? AppColors.surfaceContainerHigh : AppColors.secondary,
           foregroundColor: isGranted ? AppColors.onSurfaceVariant : AppColors.onSecondary,
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          padding: EdgeInsets.symmetric(vertical: SizeUtils.getSize(14.0)),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100.0),
+            borderRadius: BorderRadius.circular(SizeUtils.getSize(100.0)),
           ),
         ),
         child: Row(
@@ -277,14 +284,15 @@ class PermissionButton extends StatelessWidget {
           children: [
             Icon(
               icon ?? (isGranted ? Icons.check_circle : Icons.lock_open),
-              size: 20.0,
+              size: SizeUtils.getSize(20.0),
             ),
-            const SizedBox(width: 8.0),
+            SizedBox(width: SizeUtils.getSize(8.0)),
             Text(
               text,
               style: AppTypography.labelMedium.copyWith(
                 color: isGranted ? AppColors.onSurfaceVariant : AppColors.onSecondary,
                 fontWeight: FontWeight.bold,
+                fontSize: SizeUtils.getFontSize(14.0),
               ),
             ),
           ],

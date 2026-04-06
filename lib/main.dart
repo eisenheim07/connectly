@@ -33,7 +33,17 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.darkTheme,
         builder: (context, child) {
           SizeUtils.init(context);
-          return child!;
+          // Limit text scale to prevent text from being too large on different devices
+          final mediaQuery = MediaQuery.of(context);
+          final constrainedTextScale = mediaQuery.textScaler.clamp(
+            minScaleFactor: 0.8,
+            maxScaleFactor: 1.2,
+          );
+          
+          return MediaQuery(
+            data: mediaQuery.copyWith(textScaler: constrainedTextScale),
+            child: child!,
+          );
         },
         home: const SplashScreen(),
       ),
