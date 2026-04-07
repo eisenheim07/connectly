@@ -102,7 +102,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
 
                     // Bottom Controls
                     if (state.showControls) _buildBottomControls(context, state),
-                    
+
                     // Tap hint when controls are hidden
                     if (!state.showControls)
                       Positioned(
@@ -112,14 +112,8 @@ class _VideoCallViewState extends State<_VideoCallView> {
                         child: Center(
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                            decoration: BoxDecoration(
-                              color: AppColors.surface.withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            child: Text(
-                              'Tap to show controls',
-                              style: AppTypography.labelSmall.copyWith(color: AppColors.onSurface),
-                            ),
+                            decoration: BoxDecoration(color: AppColors.surface.withOpacity(0.8), borderRadius: BorderRadius.circular(20.0)),
+                            child: Text('Tap to show controls', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurface)),
                           ),
                         ),
                       ),
@@ -144,18 +138,15 @@ class _VideoCallViewState extends State<_VideoCallView> {
       children: [
         // Remote video (always rendered, full screen) - ignore pointer to allow taps through
         Positioned.fill(
-          child: IgnorePointer(
-            child: const ChimeVideoView(
-              key: ValueKey('remote_video'),
-              isLocalVideo: false,
-            ),
-          ),
+          child: IgnorePointer(child: const ChimeVideoView(key: ValueKey('remote_video'), isLocalVideo: false)),
         ),
-        
+
         // Remote video placeholder overlay
         if (!state.hasRemoteVideo)
-          // Participant hasn't joined yet
-          Positioned.fill(child: _buildWaitingPlaceholder(remoteUserName))
+          // Participant hasn't joined yet OR left the meeting
+          Positioned.fill(
+            child: state.remoteParticipantLeft ? _buildParticipantLeftPlaceholder(remoteUserName) : _buildWaitingPlaceholder(remoteUserName),
+          )
         else if (!state.remoteVideoEnabled)
           // Participant joined but video is off
           Positioned.fill(child: _buildCameraOffPlaceholder(remoteUserName)),
@@ -185,14 +176,9 @@ class _VideoCallViewState extends State<_VideoCallView> {
           children: [
             // Always render the video view with a stable key - ignore pointer to allow taps through
             Positioned.fill(
-              child: IgnorePointer(
-                child: const ChimeVideoView(
-                  key: ValueKey('local_video'),
-                  isLocalVideo: true,
-                ),
-              ),
+              child: IgnorePointer(child: const ChimeVideoView(key: ValueKey('local_video'), isLocalVideo: true)),
             ),
-            
+
             // Loading overlay
             if (state.isVideoLoading)
               Positioned.fill(
@@ -214,7 +200,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
                   ),
                 ),
               ),
-            
+
             // Camera off overlay
             if (!state.isVideoEnabled && !state.isVideoLoading)
               Positioned.fill(
@@ -315,6 +301,32 @@ class _VideoCallViewState extends State<_VideoCallView> {
             ),
             const SizedBox(height: 24.0),
             Text('$userName\'s Camera is Off', style: AppTypography.titleMedium.copyWith(color: AppColors.onSurface, fontSize: 18.0)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildParticipantLeftPlaceholder(String userName) {
+    return Container(
+      color: AppColors.surfaceContainerHigh,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Profile avatar with different styling
+            Container(
+              width: 120.0,
+              height: 120.0,
+              decoration: BoxDecoration(
+                color: AppColors.onSurfaceVariant.withOpacity(0.1),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.onSurfaceVariant, width: 3.0),
+              ),
+              child: Center(child: Icon(Icons.person_off_outlined, size: 56.0, color: AppColors.onSurfaceVariant)),
+            ),
+            const SizedBox(height: 24.0),
+            Text('$userName has left the meeting', style: AppTypography.titleMedium.copyWith(color: AppColors.onSurface, fontSize: 18.0)),
           ],
         ),
       ),

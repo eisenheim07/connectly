@@ -6,6 +6,10 @@ import com.amazonaws.services.chime.sdk.meetings.audiovideo.AudioVideoFacade
 import com.amazonaws.services.chime.sdk.meetings.audiovideo.AudioVideoObserver
 import com.amazonaws.services.chime.sdk.meetings.audiovideo.video.VideoTileObserver
 import com.amazonaws.services.chime.sdk.meetings.audiovideo.video.VideoTileState
+import com.amazonaws.services.chime.sdk.meetings.audiovideo.AttendeeInfo
+import com.amazonaws.services.chime.sdk.meetings.audiovideo.SignalUpdate
+import com.amazonaws.services.chime.sdk.meetings.audiovideo.VolumeUpdate
+import com.amazonaws.services.chime.sdk.meetings.realtime.RealtimeObserver
 import com.amazonaws.services.chime.sdk.meetings.session.CreateAttendeeResponse
 import com.amazonaws.services.chime.sdk.meetings.session.CreateMeetingResponse
 import com.amazonaws.services.chime.sdk.meetings.session.DefaultMeetingSession
@@ -267,6 +271,45 @@ class ChimePlugin : FlutterPlugin, MethodCallHandler {
 
                 override fun onVideoTileSizeChanged(tileState: VideoTileState) {
                     Log.d(TAG, "Video tile size changed: ${tileState.tileId}")
+                }
+            })
+
+            // Add realtime observer to detect attendee presence
+            audioVideo?.addRealtimeObserver(object : RealtimeObserver {
+                override fun onAttendeesJoined(attendeeInfo: Array<AttendeeInfo>) {
+                    attendeeInfo.forEach { info ->
+                        Log.d(TAG, "Attendee joined: ${info.attendeeId} (${info.externalUserId})")
+                    }
+                }
+
+                override fun onAttendeesLeft(attendeeInfo: Array<AttendeeInfo>) {
+                    attendeeInfo.forEach { info ->
+                        Log.d(TAG, "Attendee left: ${info.attendeeId} (${info.externalUserId})")
+                        channel.invokeMethod("onAttendeeLeft", mapOf("attendeeId" to info.attendeeId))
+                    }
+                }
+
+                override fun onAttendeesDropped(attendeeInfo: Array<AttendeeInfo>) {
+                    attendeeInfo.forEach { info ->
+                        Log.d(TAG, "Attendee dropped: ${info.attendeeId} (${info.externalUserId})")
+                        channel.invokeMethod("onAttendeeLeft", mapOf("attendeeId" to info.attendeeId))
+                    }
+                }
+
+                override fun onAttendeesMuted(attendeeInfo: Array<AttendeeInfo>) {
+                    // Not needed for this feature
+                }
+
+                override fun onAttendeesUnmuted(attendeeInfo: Array<AttendeeInfo>) {
+                    // Not needed for this feature
+                }
+
+                override fun onSignalStrengthChanged(signalUpdates: Array<SignalUpdate>) {
+                    // Not needed for this feature
+                }
+
+                override fun onVolumeChanged(volumeUpdates: Array<VolumeUpdate>) {
+                    // Not needed for this feature
                 }
             })
 

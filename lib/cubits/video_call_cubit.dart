@@ -29,6 +29,7 @@ class VideoCallReady extends VideoCallState {
   final bool isVideoLoading;
   final NetworkConnectionState connectionState;
   final bool remoteVideoEnabled; // Track if remote participant's video is on
+  final bool remoteParticipantLeft; // Track if remote participant left the meeting
 
   const VideoCallReady({
     required this.isVideoEnabled,
@@ -38,6 +39,7 @@ class VideoCallReady extends VideoCallState {
     this.isVideoLoading = false,
     required this.connectionState,
     this.remoteVideoEnabled = false,
+    this.remoteParticipantLeft = false,
   });
 
   VideoCallReady copyWith({
@@ -48,6 +50,7 @@ class VideoCallReady extends VideoCallState {
     bool? isVideoLoading,
     NetworkConnectionState? connectionState,
     bool? remoteVideoEnabled,
+    bool? remoteParticipantLeft,
   }) {
     return VideoCallReady(
       isVideoEnabled: isVideoEnabled ?? this.isVideoEnabled,
@@ -57,11 +60,12 @@ class VideoCallReady extends VideoCallState {
       isVideoLoading: isVideoLoading ?? this.isVideoLoading,
       connectionState: connectionState ?? this.connectionState,
       remoteVideoEnabled: remoteVideoEnabled ?? this.remoteVideoEnabled,
+      remoteParticipantLeft: remoteParticipantLeft ?? this.remoteParticipantLeft,
     );
   }
 
   @override
-  List<Object?> get props => [isVideoEnabled, isAudioMuted, showControls, hasRemoteVideo, isVideoLoading, connectionState, remoteVideoEnabled];
+  List<Object?> get props => [isVideoEnabled, isAudioMuted, showControls, hasRemoteVideo, isVideoLoading, connectionState, remoteVideoEnabled, remoteParticipantLeft];
 }
 
 class VideoCallError extends VideoCallState {
@@ -115,8 +119,13 @@ class VideoCallCubit extends Cubit<VideoCallState> {
             // Remote video tile added - track it and mark participant as joined
             _remoteTileId = tileId;
             _remoteParticipantJoined = true;
+            
             print('🎥 Remote video tile added: $tileId (participant joined)');
-            emit(currentState.copyWith(hasRemoteVideo: true, remoteVideoEnabled: true));
+            emit(currentState.copyWith(
+              hasRemoteVideo: true, 
+              remoteVideoEnabled: true,
+              remoteParticipantLeft: false, // Reset left status when they join
+            ));
             
             // Don't rebind here - tiles are already bound when added
             print('🎥 Remote participant video is now visible');
@@ -138,9 +147,9 @@ class VideoCallCubit extends Cubit<VideoCallState> {
               emit(currentState.copyWith(remoteVideoEnabled: false));
               print('   -> Remote participant stopped video (still in call)');
             } else {
-              // Participant never joined or left
+              // Participant never joined
               emit(currentState.copyWith(hasRemoteVideo: false, remoteVideoEnabled: false));
-              print('   -> Remote participant left or never joined');
+              print('   -> Remote participant never joined');
             }
           } else if (tileId == _localTileId) {
             _localTileId = null;
@@ -148,6 +157,24 @@ class VideoCallCubit extends Cubit<VideoCallState> {
             // Don't change hasRemoteVideo for local tile removal
           } else {
             print('🎥 Unknown video tile removed: $tileId');
+          }
+        }
+      };
+
+      // Listen for when remote attendee leaves the meeting
+      _chimeService.onAttendeeLeft = (attendeeId) {
+        if (state is VideoCallReady && !isClosed) {
+          final currentState = state as VideoCallReady;
+          // Check if it's not our own attendee ID
+          if (attendeeId != meetingResponse.data.attendee.attendeeId) {
+            print('👋 Remote attendee left: $attendeeId');
+            emit(currentState.copyWith(
+              hasRemoteVideo: false,
+              remoteVideoEnabled: false,
+              remoteParticipantLeft: true,
+            ));
+            _remoteParticipantJoined = false;
+            _remoteTileId = null;
           }
         }
       };
@@ -186,6 +213,7 @@ class VideoCallCubit extends Cubit<VideoCallState> {
             isVideoLoading: true, // Show loading while starting video
             connectionState: NetworkConnectionState.connected,
             remoteVideoEnabled: false,
+            remoteParticipantLeft: false,
           ),
         );
 

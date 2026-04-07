@@ -17,6 +17,9 @@ class ChimeService {
   Function()? onConnectionRecovered;
   Function()? onAudioSessionDropped;
   
+  // Callback for when remote attendee leaves
+  Function(String attendeeId)? onAttendeeLeft;
+  
   ChimeService() {
     _channel.setMethodCallHandler(_handleMethodCall);
   }
@@ -61,6 +64,16 @@ class ChimeService {
           severity: ErrorSeverity.info,
         );
         _networkManager.onConnectionRecovered();
+        break;
+      case 'onAttendeeLeft':
+        final args = call.arguments as Map;
+        final attendeeId = args['attendeeId'] as String;
+        _logger.log(
+          type: EventType.meetingLeft,
+          message: 'Remote attendee left the meeting',
+          metadata: {'attendeeId': attendeeId},
+        );
+        onAttendeeLeft?.call(attendeeId);
         break;
     }
   }
