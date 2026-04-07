@@ -87,8 +87,11 @@ class _VideoCallViewState extends State<_VideoCallView> {
                 onTap: () => context.read<VideoCallCubit>().toggleControls(),
                 child: Stack(
                   children: [
-                    // Video View Container
-                    _buildVideoView(context, state),
+                    // Remote video view (full screen)
+                    _buildRemoteVideoView(context, state),
+
+                    // Local video view (picture-in-picture)
+                    _buildLocalVideoView(context, state),
 
                     // Reconnection Banner (at top)
                     Positioned(top: 0, left: 0, right: 0, child: ReconnectionBanner(connectionState: state.connectionState)),
@@ -110,11 +113,10 @@ class _VideoCallViewState extends State<_VideoCallView> {
     );
   }
 
-  Widget _buildVideoView(BuildContext context, VideoCallReady state) {
+  Widget _buildRemoteVideoView(BuildContext context, VideoCallReady state) {
     final cubit = context.read<VideoCallCubit>();
     final isAgent = cubit.meetingResponse.data.attendee.externalUserId == 'agent';
     final remoteUserName = isAgent ? 'Client' : 'Agent';
-    final localUserName = isAgent ? 'Agent' : 'Client';
 
     return Stack(
       children: [
@@ -126,92 +128,101 @@ class _VideoCallViewState extends State<_VideoCallView> {
           ),
         ),
         
-        // Remote video placeholder overlay (shown when no remote video)
+        // Remote video placeholder overlay
         if (!state.hasRemoteVideo)
-          Positioned.fill(child: _buildWaitingPlaceholder(remoteUserName)),
+          // Participant hasn't joined yet
+          Positioned.fill(child: _buildWaitingPlaceholder(remoteUserName))
+        else if (!state.remoteVideoEnabled)
+          // Participant joined but video is off
+          Positioned.fill(child: _buildCameraOffPlaceholder(remoteUserName)),
+      ],
+    );
+  }
 
-        // Local video (picture-in-picture, always rendered)
-        Positioned(
-          top: 40.0,
-          right: 16.0,
-          child: Container(
-            width: 120.0,
-            height: 160.0,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(color: AppColors.secondary.withOpacity(0.3), width: 2.0),
-              boxShadow: [BoxShadow(color: AppColors.surface.withOpacity(0.3), blurRadius: 8.0, offset: const Offset(0, 2))],
+  Widget _buildLocalVideoView(BuildContext context, VideoCallReady state) {
+    final cubit = context.read<VideoCallCubit>();
+    final isAgent = cubit.meetingResponse.data.attendee.externalUserId == 'agent';
+    final localUserName = isAgent ? 'Agent' : 'Client';
+
+    return Positioned(
+      top: 40.0,
+      right: 16.0,
+      child: Container(
+        width: 120.0,
+        height: 160.0,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12.0),
+          border: Border.all(color: AppColors.secondary.withOpacity(0.3), width: 2.0),
+          boxShadow: [BoxShadow(color: AppColors.surface.withOpacity(0.3), blurRadius: 8.0, offset: const Offset(0, 2))],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            // Always render the video view with a stable key
+            const Positioned.fill(
+              child: ChimeVideoView(
+                key: ValueKey('local_video'),
+                isLocalVideo: true,
+              ),
             ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: [
-                // Always render the video view with a stable key
-                const Positioned.fill(
-                  child: ChimeVideoView(
-                    key: ValueKey('local_video'),
-                    isLocalVideo: true,
+            
+            // Loading overlay
+            if (state.isVideoLoading)
+              Positioned.fill(
+                child: Container(
+                  color: AppColors.surfaceContainerHigh,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 40.0,
+                          height: 40.0,
+                          child: CircularProgressIndicator(strokeWidth: 3.0, valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary)),
+                        ),
+                        const SizedBox(height: 12.0),
+                        Text('Starting Camera...', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
+                      ],
+                    ),
                   ),
                 ),
-                
-                // Loading overlay
-                if (state.isVideoLoading)
-                  Positioned.fill(
-                    child: Container(
-                      color: AppColors.surfaceContainerHigh,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 40.0,
-                              height: 40.0,
-                              child: CircularProgressIndicator(strokeWidth: 3.0, valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary)),
+              ),
+            
+            // Camera off overlay
+            if (!state.isVideoEnabled && !state.isVideoLoading)
+              Positioned.fill(
+                child: Container(
+                  color: AppColors.surfaceContainerHigh,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 56.0,
+                          height: 56.0,
+                          decoration: BoxDecoration(
+                            color: AppColors.secondary.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.secondary, width: 2.0),
+                          ),
+                          child: Center(
+                            child: Text(
+                              localUserName[0].toUpperCase(),
+                              style: AppTypography.titleMedium.copyWith(color: AppColors.secondary, fontSize: 24.0, fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(height: 12.0),
-                            Text('Starting Camera...', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
-                          ],
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 8.0),
+                        Text('Camera Off', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
+                      ],
                     ),
                   ),
-                
-                // Camera off overlay
-                if (!state.isVideoEnabled && !state.isVideoLoading)
-                  Positioned.fill(
-                    child: Container(
-                      color: AppColors.surfaceContainerHigh,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 56.0,
-                              height: 56.0,
-                              decoration: BoxDecoration(
-                                color: AppColors.secondary.withOpacity(0.2),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.secondary, width: 2.0),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  localUserName[0].toUpperCase(),
-                                  style: AppTypography.titleMedium.copyWith(color: AppColors.secondary, fontSize: 24.0, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text('Camera Off', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+                ),
+              ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -247,6 +258,37 @@ class _VideoCallViewState extends State<_VideoCallView> {
               height: 24.0,
               child: CircularProgressIndicator(strokeWidth: 2.5, valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary.withOpacity(0.6))),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCameraOffPlaceholder(String userName) {
+    return Container(
+      color: AppColors.surfaceContainerHigh,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Profile avatar
+            Container(
+              width: 120.0,
+              height: 120.0,
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withOpacity(0.2),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.secondary, width: 3.0),
+              ),
+              child: Center(
+                child: Text(
+                  userName[0].toUpperCase(),
+                  style: AppTypography.displayLarge.copyWith(color: AppColors.secondary, fontSize: 56.0, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24.0),
+            Text('$userName\'s Camera is Off', style: AppTypography.titleMedium.copyWith(color: AppColors.onSurface, fontSize: 18.0)),
           ],
         ),
       ),

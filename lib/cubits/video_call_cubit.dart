@@ -28,6 +28,7 @@ class VideoCallReady extends VideoCallState {
   final bool hasRemoteVideo;
   final bool isVideoLoading;
   final NetworkConnectionState connectionState;
+  final bool remoteVideoEnabled; // Track if remote participant's video is on
 
   const VideoCallReady({
     required this.isVideoEnabled,
@@ -36,6 +37,7 @@ class VideoCallReady extends VideoCallState {
     required this.hasRemoteVideo,
     this.isVideoLoading = false,
     required this.connectionState,
+    this.remoteVideoEnabled = false,
   });
 
   VideoCallReady copyWith({
@@ -45,6 +47,7 @@ class VideoCallReady extends VideoCallState {
     bool? hasRemoteVideo,
     bool? isVideoLoading,
     NetworkConnectionState? connectionState,
+    bool? remoteVideoEnabled,
   }) {
     return VideoCallReady(
       isVideoEnabled: isVideoEnabled ?? this.isVideoEnabled,
@@ -53,11 +56,12 @@ class VideoCallReady extends VideoCallState {
       hasRemoteVideo: hasRemoteVideo ?? this.hasRemoteVideo,
       isVideoLoading: isVideoLoading ?? this.isVideoLoading,
       connectionState: connectionState ?? this.connectionState,
+      remoteVideoEnabled: remoteVideoEnabled ?? this.remoteVideoEnabled,
     );
   }
 
   @override
-  List<Object?> get props => [isVideoEnabled, isAudioMuted, showControls, hasRemoteVideo, isVideoLoading, connectionState];
+  List<Object?> get props => [isVideoEnabled, isAudioMuted, showControls, hasRemoteVideo, isVideoLoading, connectionState, remoteVideoEnabled];
 }
 
 class VideoCallError extends VideoCallState {
@@ -75,6 +79,13 @@ class VideoCallCubit extends Cubit<VideoCallState> {
   final NetworkResilienceManager _networkManager;
   final MeetingResponse meetingResponse;
   StreamSubscription<NetworkConnectionState>? _networkSubscription;
+  
+  // Track tile IDs to distinguish local from remote
+  int? _localTileId;
+  int? _remoteTileId;
+  
+  // Track if remote participant has joined (even if video is off)
+  bool _remoteParticipantJoined = false;
 
   VideoCallCubit({required this.meetingResponse, ChimeService? chimeService, NetworkResilienceManager? networkManager})
     : _chimeService = chimeService ?? ChimeService(),
@@ -92,21 +103,23 @@ class VideoCallCubit extends Cubit<VideoCallState> {
         if (state is VideoCallReady && !isClosed) {
           final currentState = state as VideoCallReady;
           if (isLocal) {
-            // Local video tile added - ensure video is shown
+            // Local video tile added - track it and ensure video is shown
+            _localTileId = tileId;
             print('🎥 Local video tile added: $tileId');
-            if (currentState.isVideoLoading) {
-              // Video was starting, now it's ready
+            
+            // Show video whether it's initial load or restarting after stop
+            if (currentState.isVideoLoading || !currentState.isVideoEnabled) {
               emit(currentState.copyWith(isVideoEnabled: true, isVideoLoading: false));
             }
           } else {
-            // Remote video tile added
-            print('🎥 Remote video tile added: $tileId');
-            emit(currentState.copyWith(hasRemoteVideo: true));
+            // Remote video tile added - track it and mark participant as joined
+            _remoteTileId = tileId;
+            _remoteParticipantJoined = true;
+            print('🎥 Remote video tile added: $tileId (participant joined)');
+            emit(currentState.copyWith(hasRemoteVideo: true, remoteVideoEnabled: true));
             
-            // Rebind all tiles to ensure both local and remote are properly bound
-            await Future.delayed(const Duration(milliseconds: 300));
-            await _chimeService.rebindVideoTiles();
-            print('🎥 Rebound all tiles after remote video added');
+            // Don't rebind here - tiles are already bound when added
+            print('🎥 Remote participant video is now visible');
           }
         }
       };
@@ -114,8 +127,28 @@ class VideoCallCubit extends Cubit<VideoCallState> {
       _chimeService.onVideoTileRemoved = (tileId) {
         if (state is VideoCallReady && !isClosed) {
           final currentState = state as VideoCallReady;
-          emit(currentState.copyWith(hasRemoteVideo: false));
-          print('🎥 Remote video tile removed: $tileId');
+          
+          // Check if it's the remote tile being removed
+          if (tileId == _remoteTileId) {
+            _remoteTileId = null;
+            print('🎥 Remote video tile removed: $tileId');
+            
+            if (_remoteParticipantJoined) {
+              // Participant is still in call, just stopped video
+              emit(currentState.copyWith(remoteVideoEnabled: false));
+              print('   -> Remote participant stopped video (still in call)');
+            } else {
+              // Participant never joined or left
+              emit(currentState.copyWith(hasRemoteVideo: false, remoteVideoEnabled: false));
+              print('   -> Remote participant left or never joined');
+            }
+          } else if (tileId == _localTileId) {
+            _localTileId = null;
+            print('🎥 Local video tile removed: $tileId');
+            // Don't change hasRemoteVideo for local tile removal
+          } else {
+            print('🎥 Unknown video tile removed: $tileId');
+          }
         }
       };
 
@@ -152,6 +185,7 @@ class VideoCallCubit extends Cubit<VideoCallState> {
             hasRemoteVideo: false,
             isVideoLoading: true, // Show loading while starting video
             connectionState: NetworkConnectionState.connected,
+            remoteVideoEnabled: false,
           ),
         );
 
@@ -187,16 +221,16 @@ class VideoCallCubit extends Cubit<VideoCallState> {
     final currentState = state as VideoCallReady;
     try {
       if (currentState.isVideoEnabled) {
-        // Stopping video - no loader needed
+        // Stopping video - tile will be removed
         await _chimeService.stopLocalVideo();
+        // Don't clear _localTileId here - let onVideoTileRemoved handle it
         emit(currentState.copyWith(isVideoEnabled: false, isVideoLoading: false));
       } else {
-        // Starting video - show loader
-        emit(currentState.copyWith(isVideoLoading: true));
+        // Starting video - show loader, wait for tile to be added via callback
+        emit(currentState.copyWith(isVideoLoading: true, isVideoEnabled: false));
         await _chimeService.startLocalVideo();
-        // Small delay to ensure camera is ready
-        await Future.delayed(const Duration(milliseconds: 300));
-        emit(currentState.copyWith(isVideoEnabled: true, isVideoLoading: false));
+        // Don't set isVideoEnabled here - let onVideoTileAdded handle it
+        // The callback will set isVideoEnabled: true when the tile is actually added
       }
     } catch (e) {
       print('❌ Error toggling video: $e');
