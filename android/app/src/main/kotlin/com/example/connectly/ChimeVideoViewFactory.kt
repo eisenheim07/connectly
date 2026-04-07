@@ -39,18 +39,24 @@ class ChimeVideoViewFactory : PlatformViewFactory(StandardMessageCodec.INSTANCE)
     
     fun getAllVideoViews(): List<ChimeVideoView> = videoViews.values.toList()
     
-    // Get the MOST RECENTLY created remote video view (likely the one currently displayed)
+    // Get the first available remote video view (there should only be one)
     fun getRemoteVideoView(): ChimeVideoView? {
         val remoteViews = videoViews.values.filter { !it.isLocalVideo }
         Log.d("ChimeVideoViewFactory", "Getting remote view from ${remoteViews.size} remote views")
-        return remoteViews.lastOrNull() // Return most recent
+        if (remoteViews.isNotEmpty()) {
+            Log.d("ChimeVideoViewFactory", "  -> Returning remote view ${remoteViews.first().viewId}")
+        }
+        return remoteViews.firstOrNull()
     }
     
-    // Get the MOST RECENTLY created local video view (likely the one currently displayed)
+    // Get the first available local video view (there should only be one)
     fun getLocalVideoView(): ChimeVideoView? {
         val localViews = videoViews.values.filter { it.isLocalVideo }
         Log.d("ChimeVideoViewFactory", "Getting local view from ${localViews.size} local views")
-        return localViews.lastOrNull() // Return most recent
+        if (localViews.isNotEmpty()) {
+            Log.d("ChimeVideoViewFactory", "  -> Returning local view ${localViews.first().viewId}")
+        }
+        return localViews.firstOrNull()
     }
 }
 

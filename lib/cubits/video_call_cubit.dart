@@ -88,11 +88,26 @@ class VideoCallCubit extends Cubit<VideoCallState> {
 
     try {
       // Listen for video tile events
-      _chimeService.onVideoTileAdded = (tileId, attendeeId, isLocal) {
-        if (!isLocal && state is VideoCallReady && !isClosed) {
+      _chimeService.onVideoTileAdded = (tileId, attendeeId, isLocal) async {
+        if (state is VideoCallReady && !isClosed) {
           final currentState = state as VideoCallReady;
-          emit(currentState.copyWith(hasRemoteVideo: true));
-          print('🎥 Remote video tile added: $tileId');
+          if (isLocal) {
+            // Local video tile added - ensure video is shown
+            print('🎥 Local video tile added: $tileId');
+            if (currentState.isVideoLoading) {
+              // Video was starting, now it's ready
+              emit(currentState.copyWith(isVideoEnabled: true, isVideoLoading: false));
+            }
+          } else {
+            // Remote video tile added
+            print('🎥 Remote video tile added: $tileId');
+            emit(currentState.copyWith(hasRemoteVideo: true));
+            
+            // Rebind all tiles to ensure both local and remote are properly bound
+            await Future.delayed(const Duration(milliseconds: 300));
+            await _chimeService.rebindVideoTiles();
+            print('🎥 Rebound all tiles after remote video added');
+          }
         }
       };
 
@@ -131,11 +146,11 @@ class VideoCallCubit extends Cubit<VideoCallState> {
       if (success) {
         emit(
           const VideoCallReady(
-            isVideoEnabled: true,
+            isVideoEnabled: false, // Start with video disabled until tile is added
             isAudioMuted: false,
             showControls: true,
             hasRemoteVideo: false,
-            isVideoLoading: false,
+            isVideoLoading: true, // Show loading while starting video
             connectionState: NetworkConnectionState.connected,
           ),
         );
@@ -144,10 +159,15 @@ class VideoCallCubit extends Cubit<VideoCallState> {
         await _chimeService.startLocalVideo();
         print('🎥 Local video started');
 
-        // Wait for views to be created, then rebind tiles
+        // Wait longer for views to be created, then rebind tiles multiple times
+        await Future.delayed(const Duration(milliseconds: 800));
+        await _chimeService.rebindVideoTiles();
+        print('🎥 Video tiles rebound (attempt 1)');
+        
+        // Rebind again after another delay to catch any late-created views
         await Future.delayed(const Duration(milliseconds: 500));
         await _chimeService.rebindVideoTiles();
-        print('🎥 Video tiles rebound');
+        print('🎥 Video tiles rebound (attempt 2)');
       } else {
         emit(const VideoCallError('Failed to initialize meeting'));
       }

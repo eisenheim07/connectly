@@ -78,15 +78,25 @@ class ChimePlugin : FlutterPlugin, MethodCallHandler {
 
         videoView?.let { view ->
             audioVideo?.bindVideoView(view.getVideoRenderView(), tileId)
-            Log.d(TAG, "✅ Video tile $tileId bound to ${if (isLocal) "local" else "remote"} view ${view.viewId}")
+            Log.d(TAG, "✅ Successfully bound tile $tileId to ${if (isLocal) "local" else "remote"} view ${view.viewId}")
         } ?: run {
-            Log.w(TAG, "⚠️ No video view available for tile $tileId (isLocal: $isLocal)")
+            Log.w(TAG, "⚠️ No ${if (isLocal) "local" else "remote"} video view available for tile $tileId")
+            Log.w(TAG, "   Available views: local=${videoViewFactory?.getLocalVideoView()?.viewId}, remote=${videoViewFactory?.getRemoteVideoView()?.viewId}")
         }
     }
 
     private fun rebindVideoTiles(result: Result) {
         try {
-            Log.d(TAG, "Rebinding video tiles...")
+            Log.d(TAG, "🔄 Rebinding video tiles...")
+            Log.d(TAG, "   Local tile ID: $localTileId")
+            Log.d(TAG, "   Remote tile ID: $remoteTileId")
+            
+            val localView = videoViewFactory?.getLocalVideoView()
+            val remoteView = videoViewFactory?.getRemoteVideoView()
+            
+            Log.d(TAG, "   Local view available: ${localView != null} (viewId: ${localView?.viewId})")
+            Log.d(TAG, "   Remote view available: ${remoteView != null} (viewId: ${remoteView?.viewId})")
+            
             localTileId?.let { bindVideoTile(it, true) }
             remoteTileId?.let { bindVideoTile(it, false) }
             result.success(true)

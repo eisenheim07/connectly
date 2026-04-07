@@ -118,12 +118,21 @@ class _VideoCallViewState extends State<_VideoCallView> {
 
     return Stack(
       children: [
-        // Remote video (full screen) or placeholder
-        Positioned.fill(child: state.hasRemoteVideo ? const ChimeVideoView(isLocalVideo: false) : _buildWaitingPlaceholder(remoteUserName)),
+        // Remote video (always rendered, full screen)
+        const Positioned.fill(
+          child: ChimeVideoView(
+            key: ValueKey('remote_video'),
+            isLocalVideo: false,
+          ),
+        ),
+        
+        // Remote video placeholder overlay (shown when no remote video)
+        if (!state.hasRemoteVideo)
+          Positioned.fill(child: _buildWaitingPlaceholder(remoteUserName)),
 
-        // Local video (picture-in-picture)
+        // Local video (picture-in-picture, always rendered)
         Positioned(
-          top: 80.0,
+          top: 40.0,
           right: 16.0,
           child: Container(
             width: 120.0,
@@ -135,53 +144,71 @@ class _VideoCallViewState extends State<_VideoCallView> {
               boxShadow: [BoxShadow(color: AppColors.surface.withOpacity(0.3), blurRadius: 8.0, offset: const Offset(0, 2))],
             ),
             clipBehavior: Clip.antiAlias,
-            child: state.isVideoLoading
-                ? Container(
-                    color: AppColors.surfaceContainerHigh,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 40.0,
-                            height: 40.0,
-                            child: CircularProgressIndicator(strokeWidth: 3.0, valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary)),
-                          ),
-                          const SizedBox(height: 12.0),
-                          Text('Starting Camera...', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
-                        ],
-                      ),
-                    ),
-                  )
-                : state.isVideoEnabled
-                ? const ChimeVideoView(isLocalVideo: true)
-                : Container(
-                    color: AppColors.surfaceContainerHigh,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 56.0,
-                            height: 56.0,
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary.withOpacity(0.2),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.secondary, width: 2.0),
+            child: Stack(
+              children: [
+                // Always render the video view with a stable key
+                const Positioned.fill(
+                  child: ChimeVideoView(
+                    key: ValueKey('local_video'),
+                    isLocalVideo: true,
+                  ),
+                ),
+                
+                // Loading overlay
+                if (state.isVideoLoading)
+                  Positioned.fill(
+                    child: Container(
+                      color: AppColors.surfaceContainerHigh,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 40.0,
+                              height: 40.0,
+                              child: CircularProgressIndicator(strokeWidth: 3.0, valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary)),
                             ),
-                            child: Center(
-                              child: Text(
-                                localUserName[0].toUpperCase(),
-                                style: AppTypography.titleMedium.copyWith(color: AppColors.secondary, fontSize: 24.0, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text('Camera Off', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
-                        ],
+                            const SizedBox(height: 12.0),
+                            Text('Starting Camera...', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
+                          ],
+                        ),
                       ),
                     ),
                   ),
+                
+                // Camera off overlay
+                if (!state.isVideoEnabled && !state.isVideoLoading)
+                  Positioned.fill(
+                    child: Container(
+                      color: AppColors.surfaceContainerHigh,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 56.0,
+                              height: 56.0,
+                              decoration: BoxDecoration(
+                                color: AppColors.secondary.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: AppColors.secondary, width: 2.0),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  localUserName[0].toUpperCase(),
+                                  style: AppTypography.titleMedium.copyWith(color: AppColors.secondary, fontSize: 24.0, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text('Camera Off', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ],
@@ -227,52 +254,47 @@ class _VideoCallViewState extends State<_VideoCallView> {
   }
 
   Widget _buildTopBar(BuildContext context) {
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 48.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.surface.withOpacity(0.8), AppColors.surface.withOpacity(0.0)],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 48.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.surface.withOpacity(0.8), AppColors.surface.withOpacity(0.0)],
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+            decoration: BoxDecoration(
+              color: AppColors.secondary.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20.0),
+              border: Border.all(color: AppColors.secondary.withOpacity(0.4), width: 1.0),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 8.0,
+                  height: 8.0,
+                  decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
+                ),
+                const SizedBox(width: 8.0),
+                Text(
+                  'CONNECTED',
+                  style: AppTypography.labelSmall.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-              decoration: BoxDecoration(
-                color: AppColors.secondary.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20.0),
-                border: Border.all(color: AppColors.secondary.withOpacity(0.4), width: 1.0),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 8.0,
-                    height: 8.0,
-                    decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Text(
-                    'CONNECTED',
-                    style: AppTypography.labelSmall.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-            IconButtonWidget(
-              icon: Icons.info_outline,
-              onPressed: () {},
-              backgroundColor: AppColors.surface.withOpacity(0.6),
-              iconColor: AppColors.onSurface,
-            ),
-          ],
-        ),
+          // IconButtonWidget(
+          //   icon: Icons.info_outline,
+          //   onPressed: () {},
+          //   backgroundColor: AppColors.surface.withOpacity(0.6),
+          //   iconColor: AppColors.onSurface,
+          // ),
+        ],
       ),
     );
   }
