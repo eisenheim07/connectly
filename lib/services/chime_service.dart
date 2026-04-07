@@ -26,7 +26,7 @@ class ChimeService {
       final result = await _channel.invokeMethod('initializeMeeting', {
         'meetingId': meetingResponse.data.meeting.meetingId,
         'externalMeetingId': meetingResponse.data.meeting.externalMeetingId,
-        'mediaRegion': meetingResponse.data.meeting.mediaRegion ?? 'us-east-1',
+        'mediaRegion': meetingResponse.data.meeting.mediaRegion ?? 'us-east-1', // Default region if not provided
         'audioHostUrl': meetingResponse.data.meeting.mediaPlacement?.audioHostUrl,
         'audioFallbackUrl': meetingResponse.data.meeting.mediaPlacement?.audioFallbackUrl,
         'signalingUrl': meetingResponse.data.meeting.mediaPlacement?.signalingUrl,
@@ -180,6 +180,16 @@ class ChimeService {
     } on PlatformException catch (e) {
       _logger.logError('Failed to get attendees: ${e.message}');
       throw Exception('Failed to get attendees: ${e.message}');
+    }
+  }
+
+  /// Rebind video tiles to current views (useful after view recreation)
+  Future<bool> rebindVideoTiles() async {
+    try {
+      final result = await _channel.invokeMethod('rebindVideoTiles');
+      return result == true;
+    } on PlatformException catch (e) {
+      throw Exception('Failed to rebind video tiles: ${e.message}');
     }
   }
 

@@ -157,7 +157,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
                     Text('Audio Host ID', style: AppTypography.labelMedium),
                     const SizedBox(height: 8.0),
                     SelectableText(
-                      state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? 'N/A',
+                      () {
+                        final audioHostUrl = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl ?? 'N/A';
+                        return audioHostUrl.contains(':') ? audioHostUrl.split(':').first : audioHostUrl;
+                      }(),
                       style: AppTypography.titleMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -172,7 +175,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
                       text: 'Copy Details',
                       onPressed: () {
                         final meetingId = state.meetingResponse.data.meeting.meetingId;
-                        final audioHostId = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl.split('.').first ?? '';
+                        // Extract audioHostId without port (remove :3478)
+                        final audioHostUrl = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl ?? '';
+                        final audioHostId = audioHostUrl.contains(':') ? audioHostUrl.split(':').first : audioHostUrl;
                         final copyText = '{"meetingId":"$meetingId","audioHostId":"$audioHostId"}';
                         print("COPY_TEXT ===> $copyText");
 
@@ -539,7 +544,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: AppColors.surfaceContainerLow,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeUtils.getSize(24.0)), topRight: Radius.circular(SizeUtils.getSize(24.0))),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(SizeUtils.getSize(24.0)),
+                topRight: Radius.circular(SizeUtils.getSize(24.0)),
+              ),
             ),
             padding: EdgeInsets.only(
               left: SizeUtils.getSize(32.0),
@@ -562,11 +570,21 @@ class _MeetingScreenState extends State<MeetingScreen> {
                 Container(
                   width: SizeUtils.getSize(80.0),
                   height: SizeUtils.getSize(80.0),
-                  decoration: BoxDecoration(color: AppColors.secondary.withOpacity(0.1), shape: BoxShape.circle),
-                  child: Icon(Icons.videocam, color: AppColors.secondary, size: SizeUtils.getSize(48.0)),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.videocam,
+                    color: AppColors.secondary,
+                    size: SizeUtils.getSize(48.0),
+                  ),
                 ),
                 SizedBox(height: SizeUtils.getSize(24.0)),
-                Text('Ready to Join', style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
+                Text(
+                  'Ready to Join',
+                  style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold),
+                ),
                 SizedBox(height: SizeUtils.getSize(8.0)),
                 Text(
                   'You are about to join the video call',
@@ -598,9 +616,11 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
                           Future.delayed(const Duration(milliseconds: 1500), () {
                             if (context.mounted) {
-                              Navigator.of(
-                                context,
-                              ).push(MaterialPageRoute(builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse))).then((_) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse),
+                                ),
+                              ).then((_) {
                                 context.read<MeetingCubit>().reset();
                               });
                             }
