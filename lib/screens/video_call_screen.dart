@@ -84,6 +84,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
 
             if (state is VideoCallReady) {
               return GestureDetector(
+                behavior: HitTestBehavior.opaque,
                 onTap: () => context.read<VideoCallCubit>().toggleControls(),
                 child: Stack(
                   children: [
@@ -101,6 +102,27 @@ class _VideoCallViewState extends State<_VideoCallView> {
 
                     // Bottom Controls
                     if (state.showControls) _buildBottomControls(context, state),
+                    
+                    // Tap hint when controls are hidden
+                    if (!state.showControls)
+                      Positioned(
+                        bottom: 20.0,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            child: Text(
+                              'Tap to show controls',
+                              style: AppTypography.labelSmall.copyWith(color: AppColors.onSurface),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               );
@@ -120,11 +142,13 @@ class _VideoCallViewState extends State<_VideoCallView> {
 
     return Stack(
       children: [
-        // Remote video (always rendered, full screen)
-        const Positioned.fill(
-          child: ChimeVideoView(
-            key: ValueKey('remote_video'),
-            isLocalVideo: false,
+        // Remote video (always rendered, full screen) - ignore pointer to allow taps through
+        Positioned.fill(
+          child: IgnorePointer(
+            child: const ChimeVideoView(
+              key: ValueKey('remote_video'),
+              isLocalVideo: false,
+            ),
           ),
         ),
         
@@ -159,11 +183,13 @@ class _VideoCallViewState extends State<_VideoCallView> {
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
-            // Always render the video view with a stable key
-            const Positioned.fill(
-              child: ChimeVideoView(
-                key: ValueKey('local_video'),
-                isLocalVideo: true,
+            // Always render the video view with a stable key - ignore pointer to allow taps through
+            Positioned.fill(
+              child: IgnorePointer(
+                child: const ChimeVideoView(
+                  key: ValueKey('local_video'),
+                  isLocalVideo: true,
+                ),
               ),
             ),
             
