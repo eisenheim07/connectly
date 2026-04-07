@@ -273,3 +273,81 @@ class PermissionButton extends StatelessWidget {
     );
   }
 }
+
+/// Danger Button - Red background for destructive actions
+class DangerButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+  final double? borderRadius;
+  final EdgeInsetsGeometry? padding;
+  final double? width;
+  final double? height;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+
+  const DangerButton({
+    super.key,
+    required this.text,
+    this.onPressed,
+    this.icon,
+    this.borderRadius,
+    this.padding,
+    this.width,
+    this.height,
+    this.fontSize,
+    this.fontWeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final buttonChild = icon != null
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: SizeUtils.getSize(18.0)),
+              SizedBox(width: SizeUtils.getSize(6.0)),
+              Flexible(
+                child: Text(
+                  text,
+                  style: AppTypography.labelMedium.copyWith(
+                    color: AppColors.onSurface,
+                    fontWeight: fontWeight ?? FontWeight.bold,
+                    fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          )
+        : Text(
+            text,
+            style: AppTypography.labelMedium.copyWith(
+              color: AppColors.onSurface,
+              fontWeight: fontWeight ?? FontWeight.bold,
+              fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          );
+
+    return SizedBox(
+      width: width,
+      height: height,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.onError,
+          foregroundColor: AppColors.onSurface,
+          padding: padding ?? EdgeInsets.symmetric(horizontal: SizeUtils.getSize(16.0), vertical: SizeUtils.getSize(12.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? SizeUtils.getSize(100.0))),
+          disabledBackgroundColor: AppColors.surfaceContainerHigh,
+          disabledForegroundColor: AppColors.onSurfaceVariant,
+        ),
+        child: buttonChild,
+      ),
+    );
+  }
+}

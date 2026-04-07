@@ -1,218 +1,126 @@
-import 'package:connectly/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/video_call_cubit.dart';
 import '../models/meeting_response.dart';
-import '../services/chime_service.dart';
-import '../services/network_resilience_manager.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../widgets/button_widget.dart';
 import '../widgets/chime_video_view.dart';
 import '../widgets/reconnection_banner.dart';
-import 'event_log_screen.dart';
+import '../widgets/confirmation_bottom_sheet.dart';
 
-class VideoCallScreen extends StatefulWidget {
+class VideoCallScreen extends StatelessWidget {
   final MeetingResponse meetingResponse;
 
   const VideoCallScreen({super.key, required this.meetingResponse});
 
   @override
-  State<VideoCallScreen> createState() => _VideoCallScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => VideoCallCubit(meetingResponse: meetingResponse),
+      child: const _VideoCallView(),
+    );
+  }
 }
 
-class _VideoCallScreenState extends State<VideoCallScreen> {
-  final ChimeService _chimeService = ChimeService();
-  final NetworkResilienceManager _networkManager = NetworkResilienceManager();
+class _VideoCallView extends StatefulWidget {
+  const _VideoCallView();
 
-  bool _isVideoEnabled = true;
-  bool _isAudioMuted = false;
-  bool _isInitialized = false;
-  bool _showControls = true;
-  String? _errorMessage;
-  NetworkConnectionState _connectionState = NetworkConnectionState.connected;
+  @override
+  State<_VideoCallView> createState() => _VideoCallViewState();
+}
 
+class _VideoCallViewState extends State<_VideoCallView> {
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    _initializeMeeting();
-    
-    // Listen to network state changes
-    _networkManager.stateStream.listen((state) {
-      if (mounted) {
-        setState(() {
-          _connectionState = state;
-        });
-      }
-    });
   }
 
   @override
   void dispose() {
-    _chimeService.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
-  Future<bool> _onWillPop() async {
-    await _leaveMeeting();
-    return true;
-  }
-
-  Future<void> _initializeMeeting() async {
-    try {
-      print('🎥 Initializing Chime meeting...');
-      print('Meeting ID: ${widget.meetingResponse.data.meeting.meetingId}');
-      print('Attendee ID: ${widget.meetingResponse.data.attendee.attendeeId}');
-      print('Media Region: ${widget.meetingResponse.data.meeting.mediaRegion}');
-      print('Media Placement: ${widget.meetingResponse.data.meeting.mediaPlacement}');
-
-      // Check if we have all required data
-      if (widget.meetingResponse.data.meeting.mediaPlacement == null) {
-        throw Exception(
-          'Meeting configuration incomplete. The backend API must return full meeting details including MediaPlacement when joining a meeting.',
-        );
-      }
-
-      final success = await _chimeService.initializeMeeting(widget.meetingResponse);
-      print('🎥 Initialize result: $success');
-
-      if (success && mounted) {
-        setState(() {
-          _isInitialized = true;
-          _showControls = true; // Ensure controls are visible
-        });
-        print('🎥 Meeting initialized, starting local video...');
-        await _chimeService.startLocalVideo();
-        print('🎥 Local video started');
-
-        // Wait a bit for views to be created, then rebind tiles
-        await Future.delayed(const Duration(milliseconds: 500));
-        await _chimeService.rebindVideoTiles();
-        print('🎥 Video tiles rebound');
-      } else {
-        print('❌ Failed to initialize meeting');
-        if (mounted) {
-          setState(() {
-            _errorMessage = 'Failed to initialize meeting. Please try again.';
-          });
-        }
-      }
-    } catch (e) {
-      print('❌ Error initializing meeting: $e');
-      if (mounted) {
-        setState(() {
-          _errorMessage =
-              'Cannot join meeting: Backend API is not returning complete meeting configuration. Please contact support or try creating a new meeting instead.';
-        });
-      }
+  Future<bool> _onWillPop(BuildContext context) async {
+    final confirmed = await _showEndCallConfirmation(context);
+    if (confirmed == true) {
+      await context.read<VideoCallCubit>().leaveMeeting();
+      return true;
     }
+    return false;
   }
 
-  Future<void> _toggleVideo() async {
-    try {
-      if (_isVideoEnabled) {
-        await _chimeService.stopLocalVideo();
-      } else {
-        await _chimeService.startLocalVideo();
-      }
-      setState(() {
-        _isVideoEnabled = !_isVideoEnabled;
-      });
-    } catch (e) {
-      _showError(e.toString());
-    }
-  }
-
-  Future<void> _toggleAudio() async {
-    try {
-      if (_isAudioMuted) {
-        await _chimeService.unmuteLocalAudio();
-      } else {
-        await _chimeService.muteLocalAudio();
-      }
-      setState(() {
-        _isAudioMuted = !_isAudioMuted;
-      });
-    } catch (e) {
-      _showError(e.toString());
-    }
-  }
-
-  Future<void> _switchCamera() async {
-    try {
-      await _chimeService.switchCamera();
-    } catch (e) {
-      _showError(e.toString());
-    }
-  }
-
-  Future<void> _leaveMeeting() async {
-    try {
-      await _chimeService.leaveMeeting();
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
-    } catch (e) {
-      _showError(e.toString());
-    }
-  }
-
-  void _showError(String message) => context.flushBarErrorMessage(message: message);
-
-  // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.error));
-
-  void _toggleControls() {
-    setState(() {
-      _showControls = !_showControls;
-    });
+  Future<bool?> _showEndCallConfirmation(BuildContext context) {
+    return ConfirmationBottomSheet.show(
+      context: context,
+      title: 'End Call?',
+      message: 'Are you sure you want to end this call? This action cannot be undone.',
+      confirmText: 'End Call',
+      cancelText: 'Cancel',
+      icon: Icons.call_end,
+      iconColor: AppColors.onError,
+      isDangerous: true,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: () => _onWillPop(context),
       child: Scaffold(
         backgroundColor: AppColors.surface,
-        body: Stack(
-          children: [
-            // Video View Container
-            GestureDetector(
-              onTap: _toggleControls,
-              child: _buildVideoView(),
-            ),
+        body: BlocBuilder<VideoCallCubit, VideoCallState>(
+          builder: (context, state) {
+            if (state is VideoCallLoading) {
+              return _buildLoadingOverlay(null);
+            }
 
-            // Reconnection Banner (at top)
-            if (_isInitialized)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: ReconnectionBanner(connectionState: _connectionState),
-              ),
+            if (state is VideoCallError) {
+              return _buildLoadingOverlay(state.message);
+            }
 
-            // Top Bar
-            if (_isInitialized && _showControls) _buildTopBar(),
+            if (state is VideoCallReady) {
+              return GestureDetector(
+                onTap: () => context.read<VideoCallCubit>().toggleControls(),
+                child: Stack(
+                  children: [
+                    // Video View Container
+                    _buildVideoView(context, state),
 
-            // Bottom Controls
-            if (_isInitialized && _showControls) _buildBottomControls(),
+                    // Reconnection Banner (at top)
+                    Positioned(top: 0, left: 0, right: 0, child: ReconnectionBanner(connectionState: state.connectionState)),
 
-            // Loading/Error Overlay
-            if (!_isInitialized) _buildLoadingOverlay(),
-          ],
+                    // Top Bar
+                    if (state.showControls) _buildTopBar(context),
+
+                    // Bottom Controls
+                    if (state.showControls) _buildBottomControls(context, state),
+                  ],
+                ),
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
         ),
       ),
     );
   }
 
-  Widget _buildVideoView() {
+  Widget _buildVideoView(BuildContext context, VideoCallReady state) {
+    final cubit = context.read<VideoCallCubit>();
+    final isAgent = cubit.meetingResponse.data.attendee.externalUserId == 'agent';
+    final remoteUserName = isAgent ? 'Client' : 'Agent';
+    final localUserName = isAgent ? 'Agent' : 'Client';
+
     return Stack(
       children: [
-        // Remote video (full screen)
-        const Positioned.fill(
-          child: ChimeVideoView(isLocalVideo: false),
-        ),
-        
+        // Remote video (full screen) or placeholder
+        Positioned.fill(child: state.hasRemoteVideo ? const ChimeVideoView(isLocalVideo: false) : _buildWaitingPlaceholder(remoteUserName)),
+
         // Local video (picture-in-picture)
         Positioned(
           top: 80.0,
@@ -224,23 +132,101 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(12.0),
               border: Border.all(color: AppColors.secondary.withOpacity(0.3), width: 2.0),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.surface.withOpacity(0.3),
-                  blurRadius: 8.0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              boxShadow: [BoxShadow(color: AppColors.surface.withOpacity(0.3), blurRadius: 8.0, offset: const Offset(0, 2))],
             ),
             clipBehavior: Clip.antiAlias,
-            child: const ChimeVideoView(isLocalVideo: true),
+            child: state.isVideoLoading
+                ? Container(
+                    color: AppColors.surfaceContainerHigh,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 40.0,
+                            height: 40.0,
+                            child: CircularProgressIndicator(strokeWidth: 3.0, valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary)),
+                          ),
+                          const SizedBox(height: 12.0),
+                          Text('Starting Camera...', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
+                        ],
+                      ),
+                    ),
+                  )
+                : state.isVideoEnabled
+                ? const ChimeVideoView(isLocalVideo: true)
+                : Container(
+                    color: AppColors.surfaceContainerHigh,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 56.0,
+                            height: 56.0,
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.secondary, width: 2.0),
+                            ),
+                            child: Center(
+                              child: Text(
+                                localUserName[0].toUpperCase(),
+                                style: AppTypography.titleMedium.copyWith(color: AppColors.secondary, fontSize: 24.0, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text('Camera Off', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTopBar() {
+  Widget _buildWaitingPlaceholder(String userName) {
+    return Container(
+      color: AppColors.surfaceContainerHigh,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Profile avatar
+            Container(
+              width: 120.0,
+              height: 120.0,
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withOpacity(0.2),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.secondary, width: 3.0),
+              ),
+              child: Center(
+                child: Text(
+                  userName[0].toUpperCase(),
+                  style: AppTypography.displayLarge.copyWith(color: AppColors.secondary, fontSize: 56.0, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24.0),
+            Text('Waiting for $userName to join...', style: AppTypography.titleMedium.copyWith(color: AppColors.onSurface, fontSize: 18.0)),
+            const SizedBox(height: 12.0),
+            // Animated loading indicator
+            SizedBox(
+              width: 24.0,
+              height: 24.0,
+              child: CircularProgressIndicator(strokeWidth: 2.5, valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary.withOpacity(0.6))),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopBar(BuildContext context) {
     return Positioned(
       top: 0,
       left: 0,
@@ -279,28 +265,11 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                 ],
               ),
             ),
-            Row(
-              children: [
-                IconButtonWidget(
-                  icon: Icons.event_note,
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const EventLogScreen()),
-                    );
-                  },
-                  backgroundColor: AppColors.surface.withOpacity(0.6),
-                  iconColor: AppColors.onSurface,
-                ),
-                const SizedBox(width: 8),
-                IconButtonWidget(
-                  icon: Icons.info_outline,
-                  onPressed: () {
-                    // Show meeting info
-                  },
-                  backgroundColor: AppColors.surface.withOpacity(0.6),
-                  iconColor: AppColors.onSurface,
-                ),
-              ],
+            IconButtonWidget(
+              icon: Icons.info_outline,
+              onPressed: () {},
+              backgroundColor: AppColors.surface.withOpacity(0.6),
+              iconColor: AppColors.onSurface,
             ),
           ],
         ),
@@ -308,7 +277,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     );
   }
 
-  Widget _buildBottomControls() {
+  Widget _buildBottomControls(BuildContext context, VideoCallReady state) {
+    final cubit = context.read<VideoCallCubit>();
+
     return Positioned(
       bottom: 0,
       left: 0,
@@ -326,19 +297,33 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildControlButton(
-              icon: _isAudioMuted ? Icons.mic_off : Icons.mic,
-              label: _isAudioMuted ? 'Unmute' : 'Mute',
-              onPressed: _toggleAudio,
-              isActive: !_isAudioMuted,
+              icon: state.isAudioMuted ? Icons.mic_off : Icons.mic,
+              label: state.isAudioMuted ? 'Unmute' : 'Mute',
+              onPressed: () => cubit.toggleAudio(),
+              isActive: !state.isAudioMuted,
             ),
             _buildControlButton(
-              icon: _isVideoEnabled ? Icons.videocam : Icons.videocam_off,
-              label: _isVideoEnabled ? 'Stop Video' : 'Start Video',
-              onPressed: _toggleVideo,
-              isActive: _isVideoEnabled,
+              icon: state.isVideoEnabled ? Icons.videocam : Icons.videocam_off,
+              label: state.isVideoEnabled ? 'Stop Video' : 'Start Video',
+              onPressed: () => cubit.toggleVideo(),
+              isActive: state.isVideoEnabled,
             ),
-            _buildControlButton(icon: Icons.flip_camera_ios, label: 'Flip', onPressed: _switchCamera, isActive: true),
-            _buildControlButton(icon: Icons.call_end, label: 'End', onPressed: _leaveMeeting, isActive: false, isEndCall: true),
+            _buildControlButton(icon: Icons.flip_camera_ios, label: 'Flip', onPressed: () => cubit.switchCamera(), isActive: true),
+            _buildControlButton(
+              icon: Icons.call_end,
+              label: 'End',
+              onPressed: () async {
+                final confirmed = await _showEndCallConfirmation(context);
+                if (confirmed == true) {
+                  await context.read<VideoCallCubit>().leaveMeeting();
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                }
+              },
+              isActive: false,
+              isEndCall: true,
+            ),
           ],
         ),
       ),
@@ -360,7 +345,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
           height: 64.0,
           decoration: BoxDecoration(
             color: isEndCall
-                ? AppColors.error
+                ? AppColors.onError
                 : isActive
                 ? AppColors.glassBackground
                 : AppColors.surfaceContainerHigh,
@@ -390,14 +375,14 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     );
   }
 
-  Widget _buildLoadingOverlay() {
+  Widget _buildLoadingOverlay(String? errorMessage) {
     return Container(
       color: AppColors.surface.withOpacity(0.9),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_errorMessage != null) ...[
+            if (errorMessage != null) ...[
               Icon(Icons.error_outline, size: 64.0, color: AppColors.error),
               const SizedBox(height: 24.0),
               Text('Connection Error', style: AppTypography.titleMedium),
@@ -405,7 +390,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 48.0),
                 child: Text(
-                  _errorMessage!,
+                  errorMessage,
                   style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant),
                   textAlign: TextAlign.center,
                 ),

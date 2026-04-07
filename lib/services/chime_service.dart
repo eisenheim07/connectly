@@ -7,6 +7,63 @@ import 'network_resilience_manager.dart';
 /// Service to handle Amazon Chime SDK integration via platform channels
 class ChimeService {
   static const MethodChannel _channel = MethodChannel('com.connectly/chime');
+  
+  // Callbacks for video tile events
+  Function(int tileId, String? attendeeId, bool isLocal)? onVideoTileAdded;
+  Function(int tileId)? onVideoTileRemoved;
+  
+  // Callbacks for connection events
+  Function()? onConnectionBecamePoor;
+  Function()? onConnectionRecovered;
+  Function()? onAudioSessionDropped;
+  
+  ChimeService() {
+    _channel.setMethodCallHandler(_handleMethodCall);
+  }
+  
+  Future<void> _handleMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'onVideoTileAdded':
+        final args = call.arguments as Map;
+        final tileId = args['tileId'] as int;
+        final attendeeId = args['attendeeId'] as String?;
+        final isLocal = args['isLocalTile'] as bool;
+        onVideoTileAdded?.call(tileId, attendeeId, isLocal);
+        break;
+      case 'onVideoTileRemoved':
+        final args = call.arguments as Map;
+        final tileId = args['tileId'] as int;
+        onVideoTileRemoved?.call(tileId);
+        break;
+      case 'onConnectionBecamePoor':
+        _logger.logWarning('Connection quality degraded');
+        _networkManager.onConnectionPoor();
+        onConnectionBecamePoor?.call();
+        break;
+      case 'onConnectionRecovered':
+        _logger.log(
+          type: EventType.networkRecovered,
+          message: 'Connection quality recovered',
+          severity: ErrorSeverity.info,
+        );
+        _networkManager.onConnectionRecovered();
+        onConnectionRecovered?.call();
+        break;
+      case 'onAudioSessionDropped':
+        _logger.logError('Audio session dropped - connection lost');
+        _networkManager.onConnectionLost();
+        onAudioSessionDropped?.call();
+        break;
+      case 'onAudioSessionStarted':
+        _logger.log(
+          type: EventType.meetingJoined,
+          message: 'Audio session started',
+          severity: ErrorSeverity.info,
+        );
+        _networkManager.onConnectionRecovered();
+        break;
+    }
+  }
   final EventLogger _logger = EventLogger();
   final NetworkResilienceManager _networkManager = NetworkResilienceManager();
 
