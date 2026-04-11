@@ -31,6 +31,12 @@ class AppColors {
   static const Color black = Color(0xFF000000);
   static const Color transparent = Colors.transparent;
 
+  // Text color variants with opacity
+  static const Color onSurfaceVariantDimmed = Color(0x99C7C6C5); // 60% opacity
+  static const Color onSurfaceVariantHint = Color(0x80C7C6C5); // 50% opacity
+  static const Color onSurfaceMediumEmphasis = Color(0xCCE5E2E1); // 80% opacity
+  static const Color whiteMediumEmphasis = Color(0xE6FFFFFF); // 90% opacity
+
   // Additional UI Colors
   static const Color blue = Color(0xFF2196F3);
   static const Color red = Color(0xFFF44336);

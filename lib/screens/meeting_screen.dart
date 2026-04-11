@@ -130,13 +130,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
                 child: const Icon(Icons.check_circle, color: AppColors.secondary, size: 48.0),
               ),
               const SizedBox(height: 24.0),
-              Text('Meeting Created Successfully', style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
+              Text('Meeting Created Successfully', style: AppTypography.headlineSmallBold),
               const SizedBox(height: 8.0),
-              Text(
-                'Share this meeting ID with others to join',
-                style: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
+              Text('Share this meeting ID with others to join', style: AppTypography.bodyMediumSecondary, textAlign: TextAlign.center),
               const SizedBox(height: 32.0),
               Container(
                 width: double.infinity,
@@ -299,15 +295,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Focus on the\nconversation.',
-                      style: AppTypography.displayMedium.copyWith(color: AppColors.onSurface, fontWeight: FontWeight.w900, height: 1.1),
-                    ),
+                    Text('Focus on the\nconversation.', style: AppTypography.displayMediumBlack),
                     const SizedBox(height: 16.0),
-                    Text(
-                      'Reliable, high-fidelity video conferencing designed for professional clarity.',
-                      style: AppTypography.bodyMedium.copyWith(color: AppColors.onSurface.withOpacity(0.8), fontWeight: FontWeight.w500),
-                    ),
+                    Text('Reliable, high-fidelity video conferencing designed for professional clarity.', style: AppTypography.bodyMediumMedium),
                   ],
                 ),
                 const SizedBox(height: 32.0),
@@ -339,7 +329,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
         children: [
           Text('Join a Meeting', style: AppTypography.headlineSmall),
           const SizedBox(height: 8.0),
-          Text('Paste meeting details below', style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant)),
+          Text('Paste meeting details below', style: AppTypography.bodySmallSecondary),
           const SizedBox(height: 24.0),
           TextField(
             controller: _mediaPlacementController,
@@ -353,7 +343,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
                 icon: Icon(Icons.clear),
               ),
               hintText: '{"meetingId":"...","audioHostId":"..."}',
-              hintStyle: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant.withOpacity(0.5)),
+              hintStyle: AppTypography.bodySmallHint,
               filled: true,
               fillColor: AppColors.surfaceContainerHighest,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
@@ -464,21 +454,13 @@ class _MeetingScreenState extends State<MeetingScreen> {
                 decoration: BoxDecoration(color: iconColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12.0)),
                 child: Icon(icon, color: iconColor, size: 24.0),
               ),
-              Text(
-                time,
-                style: AppTypography.labelSmall.copyWith(
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: AppColors.onSurfaceVariant.withOpacity(0.6),
-                ),
-              ),
+              Text(time, style: AppTypography.labelSmallTimestamp),
             ],
           ),
           const SizedBox(height: 24.0),
           Text(title, style: AppTypography.titleLarge, maxLines: 2, overflow: TextOverflow.ellipsis),
           const SizedBox(height: 8.0),
-          Text('$participants Participants • $duration duration', style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant)),
+          Text('$participants Participants • $duration duration', style: AppTypography.bodySmallSecondary),
           const SizedBox(height: 24.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -570,13 +552,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
                   child: Icon(Icons.videocam, color: AppColors.secondary, size: SizeUtils.getSize(48.0)),
                 ),
                 SizedBox(height: SizeUtils.getSize(24.0)),
-                Text('Ready to Join', style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
+                Text('Ready to Join', style: AppTypography.headlineSmallBold),
                 SizedBox(height: SizeUtils.getSize(8.0)),
-                Text(
-                  'You are about to join the video call',
-                  style: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant),
-                  textAlign: TextAlign.center,
-                ),
+                Text('You are about to join the video call', style: AppTypography.bodyMediumSecondary, textAlign: TextAlign.center),
                 SizedBox(height: SizeUtils.getSize(32.0)),
                 Row(
                   children: [

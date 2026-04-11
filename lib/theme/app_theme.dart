@@ -95,9 +95,7 @@ class AppTheme {
           horizontal: 16.0,
           vertical: 12.0,
         ),
-        hintStyle: AppTypography.bodyMedium.copyWith(
-          color: AppColors.onSurfaceVariant,
-        ),
+        hintStyle: AppTypography.bodyMediumSecondary,
       ),
 
       // Elevated Button - Primary Actions

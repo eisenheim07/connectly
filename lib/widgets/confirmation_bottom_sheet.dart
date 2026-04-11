@@ -110,9 +110,7 @@ class ConfirmationBottomSheet extends StatelessWidget {
             // Title
             Text(
               title,
-              style: AppTypography.headlineSmall.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTypography.headlineSmallBold,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8.0),
@@ -120,9 +118,7 @@ class ConfirmationBottomSheet extends StatelessWidget {
             // Message
             Text(
               message,
-              style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
+              style: AppTypography.bodyMediumSecondary,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32.0),

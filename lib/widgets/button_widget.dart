@@ -258,11 +258,7 @@ class PermissionButton extends StatelessWidget {
             Flexible(
               child: Text(
                 text,
-                style: AppTypography.labelMedium.copyWith(
-                  color: isGranted ? AppColors.onSurfaceVariant : AppColors.onSecondary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: SizeUtils.getFontSize(14.0),
-                ),
+                style: isGranted ? AppTypography.labelMediumBoldDisabled : AppTypography.labelMediumBoldSecondary,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),

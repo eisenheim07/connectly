@@ -33,10 +33,10 @@ class ReconnectionBanner extends StatelessWidget {
               children: [
                 Text(
                   _getTitle(),
-                  style: AppTypography.labelMedium.copyWith(color: AppColors.white),
+                  style: AppTypography.labelMediumWhite,
                 ),
                 const SizedBox(height: 2),
-                Text(_getMessage(), style: AppTypography.bodySmall.copyWith(color: AppColors.white.withOpacity(0.9))),
+                Text(_getMessage(), style: AppTypography.labelSmallWhite),
               ],
             ),
           ),

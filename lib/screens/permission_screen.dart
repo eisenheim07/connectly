@@ -128,7 +128,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
         const SizedBox(height: 16.0),
         Text(
           'To provide the best editorial quality video and crystalline audio, we need your permission to access local hardware.',
-          style: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant),
+          style: AppTypography.bodyMediumSecondary,
         ),
       ],
     );
@@ -162,7 +162,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                 decoration: BoxDecoration(color: AppColors.tertiaryContainer.withOpacity(0.2), borderRadius: BorderRadius.circular(20.0)),
                 child: Text(
                   'REQUIRED',
-                  style: AppTypography.labelSmall.copyWith(color: AppColors.tertiary, fontWeight: FontWeight.bold),
+                  style: AppTypography.labelSmallBold,
                 ),
               ),
             ],
@@ -170,7 +170,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
           const SizedBox(height: 24.0),
           Text(title, style: AppTypography.titleMedium),
           const SizedBox(height: 8.0),
-          Text(description, style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant)),
+          Text(description, style: AppTypography.bodySmallSecondary),
           const SizedBox(height: 24.0),
           PermissionButton(text: isGranted ? 'Access Granted' : 'Allow $title', onPressed: onPressed, isGranted: isGranted),
         ],
@@ -212,7 +212,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                       child: const Icon(Icons.videocam_off, color: AppColors.onSurfaceVariant, size: 48.0),
                     ),
                     const SizedBox(height: 24.0),
-                    Text('Waiting for camera permission...', style: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant)),
+                    Text('Waiting for camera permission...', style: AppTypography.bodyMediumSecondary),
                   ],
                 ),
               ),
@@ -232,7 +232,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                     const SizedBox(width: 8.0),
                     Text(
                       _isCameraInitialized ? 'LIVE PREVIEW' : 'OFFLINE PREVIEW',
-                      style: AppTypography.labelSmall.copyWith(fontWeight: FontWeight.bold),
+                      style: AppTypography.labelSmallBoldPrimary,
                     ),
                   ],
                 ),
@@ -264,7 +264,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
         const SizedBox(height: 16.0),
         Text(
           'By entering, you agree to our Privacy Policy regarding temporary media processing.',
-          style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant.withOpacity(0.6)),
+          style: AppTypography.bodySmallDimmed,
           textAlign: TextAlign.center,
         ),
       ],
