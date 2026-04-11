@@ -38,6 +38,15 @@ class AppTypography {
   );
 
   // Title - Section headers
+  static const TextStyle titleLarge = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 18.0,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0,
+    height: 1.44,
+    color: AppColors.onSurface,
+  );
+
   static const TextStyle titleMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16.0,
@@ -57,6 +66,15 @@ class AppTypography {
   );
 
   // Label - Button captions and utility text
+  static const TextStyle labelLarge = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.1,
+    height: 1.43,
+    color: AppColors.onSurface,
+  );
+
   static const TextStyle labelMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 12.0,
@@ -76,6 +94,15 @@ class AppTypography {
   );
 
   // Body - General content
+  static const TextStyle bodyLarge = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16.0,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.5,
+    height: 1.5,
+    color: AppColors.onSurface,
+  );
+
   static const TextStyle bodyMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14.0,

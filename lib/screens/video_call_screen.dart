@@ -194,7 +194,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
                           child: CircularProgressIndicator(strokeWidth: 3.0, valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary)),
                         ),
                         const SizedBox(height: 12.0),
-                        Text('Starting Camera...', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
+                        Text('Starting Camera...', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant)),
                       ],
                     ),
                   ),
@@ -221,12 +221,12 @@ class _VideoCallViewState extends State<_VideoCallView> {
                           child: Center(
                             child: Text(
                               localUserName[0].toUpperCase(),
-                              style: AppTypography.titleMedium.copyWith(color: AppColors.secondary, fontSize: 24.0, fontWeight: FontWeight.bold),
+                              style: AppTypography.headlineSmall.copyWith(color: AppColors.secondary),
                             ),
                           ),
                         ),
                         const SizedBox(height: 8.0),
-                        Text('Camera Off', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant, fontSize: 10.0)),
+                        Text('Camera Off', style: AppTypography.labelSmall.copyWith(color: AppColors.onSurfaceVariant)),
                       ],
                     ),
                   ),
@@ -257,12 +257,12 @@ class _VideoCallViewState extends State<_VideoCallView> {
               child: Center(
                 child: Text(
                   userName[0].toUpperCase(),
-                  style: AppTypography.displayLarge.copyWith(color: AppColors.secondary, fontSize: 56.0, fontWeight: FontWeight.bold),
+                  style: AppTypography.displayMedium.copyWith(color: AppColors.secondary),
                 ),
               ),
             ),
             const SizedBox(height: 24.0),
-            Text('Waiting for $userName to join...', style: AppTypography.titleMedium.copyWith(color: AppColors.onSurface, fontSize: 18.0)),
+            Text('Waiting for $userName to join...', style: AppTypography.titleLarge.copyWith(color: AppColors.onSurface)),
             const SizedBox(height: 12.0),
             // Animated loading indicator
             SizedBox(
@@ -295,12 +295,12 @@ class _VideoCallViewState extends State<_VideoCallView> {
               child: Center(
                 child: Text(
                   userName[0].toUpperCase(),
-                  style: AppTypography.displayLarge.copyWith(color: AppColors.secondary, fontSize: 56.0, fontWeight: FontWeight.bold),
+                  style: AppTypography.displayMedium.copyWith(color: AppColors.secondary),
                 ),
               ),
             ),
             const SizedBox(height: 24.0),
-            Text('$userName\'s Camera is Off', style: AppTypography.titleMedium.copyWith(color: AppColors.onSurface, fontSize: 18.0)),
+            Text('$userName\'s Camera is Off', style: AppTypography.titleLarge.copyWith(color: AppColors.onSurface)),
           ],
         ),
       ),
@@ -326,7 +326,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
               child: Center(child: Icon(Icons.person_off_outlined, size: 56.0, color: AppColors.onSurfaceVariant)),
             ),
             const SizedBox(height: 24.0),
-            Text('$userName has left the meeting', style: AppTypography.titleMedium.copyWith(color: AppColors.onSurface, fontSize: 18.0)),
+            Text('$userName has left the meeting', style: AppTypography.titleLarge.copyWith(color: AppColors.onSurface)),
           ],
         ),
       ),
@@ -363,7 +363,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
                 const SizedBox(width: 8.0),
                 Text(
                   'CONNECTED',
-                  style: AppTypography.labelSmall.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold),
+                  style: AppTypography.labelLarge.copyWith(color: AppColors.secondary),
                 ),
               ],
             ),
@@ -471,7 +471,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
         const SizedBox(height: 8.0),
         Text(
           label,
-          style: AppTypography.labelSmall.copyWith(color: AppColors.onSurface, fontWeight: FontWeight.w500),
+          style: AppTypography.labelMedium.copyWith(color: AppColors.onSurface),
         ),
       ],
     );

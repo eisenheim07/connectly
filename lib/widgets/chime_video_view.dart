@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/app_colors.dart';
+
 /// Native video view widget for Amazon Chime SDK
 class ChimeVideoView extends StatelessWidget {
   final int? tileId;
@@ -53,11 +55,11 @@ class ChimeVideoView extends StatelessWidget {
     }
 
     return Container(
-      color: Colors.black,
+      color: AppColors.black,
       child: const Center(
         child: Text(
           'Platform not supported',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: AppColors.white),
         ),
       ),
     );

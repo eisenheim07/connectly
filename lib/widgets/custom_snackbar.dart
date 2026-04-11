@@ -18,7 +18,7 @@ extension FlushBarErrorMessage on BuildContext {
         backgroundColor: AppColors.onError,
         reverseAnimationCurve: Curves.easeInOut,
         positionOffset: 20,
-        icon: const Icon(Icons.error, size: 28, color: Colors.white),
+        icon: const Icon(Icons.error, size: 28, color: AppColors.white),
       )..show(this),
     );
   }
@@ -39,7 +39,7 @@ extension FlushBarSuccessMessage on BuildContext {
         backgroundColor: AppColors.secondary,
         reverseAnimationCurve: Curves.easeInOut,
         positionOffset: 20,
-        icon: const Icon(Icons.error, size: 28, color: Colors.white),
+        icon: const Icon(Icons.error, size: 28, color: AppColors.white),
       )..show(this),
     );
   }

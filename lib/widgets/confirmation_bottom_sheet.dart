@@ -39,7 +39,7 @@ class ConfirmationBottomSheet extends StatelessWidget {
   }) {
     return showModalBottomSheet<bool>(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       isScrollControlled: true,
       builder: (bottomSheetContext) => ConfirmationBottomSheet(
         title: title,

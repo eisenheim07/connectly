@@ -104,7 +104,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
   void _showMeetingCreatedBottomSheet(BuildContext context, MeetingCreated state) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       isScrollControlled: true,
       builder: (bottomSheetContext) => Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom),
@@ -337,13 +337,13 @@ class _MeetingScreenState extends State<MeetingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Join a Meeting', style: AppTypography.titleMedium.copyWith(fontSize: 20.0, fontWeight: FontWeight.bold)),
+          Text('Join a Meeting', style: AppTypography.headlineSmall),
           const SizedBox(height: 8.0),
           Text('Paste meeting details below', style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 24.0),
           TextField(
             controller: _mediaPlacementController,
-            style: AppTypography.bodyMedium.copyWith(fontSize: 12.0),
+            style: AppTypography.bodySmall,
             maxLines: 3,
             decoration: InputDecoration(
               suffixIcon: IconButton(
@@ -353,7 +353,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
                 icon: Icon(Icons.clear),
               ),
               hintText: '{"meetingId":"...","audioHostId":"..."}',
-              hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariant.withOpacity(0.5), fontSize: 11.0),
+              hintStyle: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant.withOpacity(0.5)),
               filled: true,
               fillColor: AppColors.surfaceContainerHighest,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
@@ -398,7 +398,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Recent Meetings', style: AppTypography.titleMedium.copyWith(fontSize: 20.0, fontWeight: FontWeight.bold)),
+            Text('Recent Meetings', style: AppTypography.headlineSmall),
             TextButtonWidget(text: 'View History', onPressed: () {}),
           ],
         ),
@@ -476,12 +476,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
             ],
           ),
           const SizedBox(height: 24.0),
-          Text(
-            title,
-            style: AppTypography.titleMedium.copyWith(fontSize: 18.0, fontWeight: FontWeight.bold),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+          Text(title, style: AppTypography.titleLarge, maxLines: 2, overflow: TextOverflow.ellipsis),
           const SizedBox(height: 8.0),
           Text('$participants Participants • $duration duration', style: AppTypography.bodySmall.copyWith(color: AppColors.onSurfaceVariant)),
           const SizedBox(height: 24.0),
@@ -530,16 +525,14 @@ class _MeetingScreenState extends State<MeetingScreen> {
         color: AppColors.surfaceBright,
         border: Border.all(color: AppColors.surfaceContainerLow, width: 2.0),
       ),
-      child: Center(
-        child: Text('+$count', style: AppTypography.labelSmall.copyWith(fontSize: 10.0, fontWeight: FontWeight.bold)),
-      ),
+      child: Center(child: Text('+$count', style: AppTypography.labelSmall)),
     );
   }
 
   void _showJoinMeetingBottomSheet(BuildContext context, MeetingJoined state) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,

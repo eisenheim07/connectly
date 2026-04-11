@@ -62,15 +62,15 @@ class _EventLogScreenState extends State<EventLogScreen> {
   Color _getSeverityColor(ErrorSeverity severity) {
     switch (severity) {
       case ErrorSeverity.critical:
-        return Colors.red;
+        return AppColors.red;
       case ErrorSeverity.high:
-        return Colors.orange;
+        return AppColors.orange;
       case ErrorSeverity.medium:
-        return Colors.yellow;
+        return AppColors.yellow;
       case ErrorSeverity.low:
-        return Colors.blue;
+        return AppColors.blue;
       case ErrorSeverity.info:
-        return Colors.grey;
+        return AppColors.grey;
     }
   }
 

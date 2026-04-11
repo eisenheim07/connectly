@@ -20,7 +20,7 @@ class ReconnectionBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: _getBackgroundColor(),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
+        boxShadow: [BoxShadow(color: AppColors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
       ),
       child: Row(
         children: [
@@ -33,10 +33,10 @@ class ReconnectionBanner extends StatelessWidget {
               children: [
                 Text(
                   _getTitle(),
-                  style: AppTypography.labelMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: AppTypography.labelMedium.copyWith(color: AppColors.white),
                 ),
                 const SizedBox(height: 2),
-                Text(_getMessage(), style: AppTypography.bodySmall.copyWith(color: Colors.white.withOpacity(0.9))),
+                Text(_getMessage(), style: AppTypography.bodySmall.copyWith(color: AppColors.white.withOpacity(0.9))),
               ],
             ),
           ),
@@ -44,7 +44,7 @@ class ReconnectionBanner extends StatelessWidget {
             const SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+              child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(AppColors.white)),
             ),
         ],
       ),
@@ -54,13 +54,13 @@ class ReconnectionBanner extends StatelessWidget {
   Color _getBackgroundColor() {
     switch (connectionState) {
       case NetworkConnectionState.disconnected:
-        return Colors.red.shade700;
+        return AppColors.statusError;
       case NetworkConnectionState.reconnecting:
-        return Colors.orange.shade700;
+        return AppColors.statusWarning;
       case NetworkConnectionState.poor:
-        return Colors.yellow.shade700;
+        return AppColors.statusInfo;
       case NetworkConnectionState.connected:
-        return Colors.green.shade700;
+        return AppColors.statusSuccess;
     }
   }
 
@@ -81,7 +81,7 @@ class ReconnectionBanner extends StatelessWidget {
         break;
     }
 
-    return Icon(iconData, color: Colors.white, size: 24);
+    return Icon(iconData, color: AppColors.white, size: 24);
   }
 
   String _getTitle() {

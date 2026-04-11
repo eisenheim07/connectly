@@ -20,6 +20,30 @@ class AppColors {
   static const Color tertiary = Color(0xFFFFB4AA); // Reconnecting/Warning
   static const Color error = Color(0xFFFFB4AB); // Disconnected/Failed
 
+  // Status Colors for Network States
+  static const Color statusSuccess = Color(0xFF4CAF50); // Green for success/connected
+  static const Color statusWarning = Color(0xFFFFA726); // Orange for warning/reconnecting
+  static const Color statusError = Color(0xFFF44336); // Red for error/disconnected
+  static const Color statusInfo = Color(0xFFFDD835); // Yellow for info/poor connection
+
+  // Pure Colors
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
+  static const Color transparent = Colors.transparent;
+
+  // Additional UI Colors
+  static const Color blue = Color(0xFF2196F3);
+  static const Color red = Color(0xFFF44336);
+  static const Color orange = Color(0xFFFF9800);
+  static const Color yellow = Color(0xFFFFC107);
+  static const Color green = Color(0xFF4CAF50);
+  static const Color purple = Color(0xFF9C27B0);
+  static const Color teal = Color(0xFF009688);
+  static const Color amber = Color(0xFFFFC107);
+  static const Color deepOrange = Color(0xFFFF5722);
+  static const Color indigo = Color(0xFF3F51B5);
+  static const Color grey = Color(0xFF9E9E9E);
+
   // Status Container Variants
   static const Color tertiaryContainer = Color(0xFF8B3A2F);
   static const Color onTertiaryFixedVariant = Color(0xFFD4735B);
