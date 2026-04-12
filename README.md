@@ -19,9 +19,11 @@ Connectly is a mobile video conferencing solution that enables high-quality vide
 
 ### Network & Connectivity
 - **Internet Monitoring**: Real-time connectivity detection with 3-second intervals
-- **Connection Resilience**: Automatic reconnection with exponential backoff
-- **Network Status Indicators**: Visual feedback for connection quality (poor/recovered)
+- **No Internet Bottom Sheet**: Modal dialog appears when connection is lost (app active only)
+- **Connection Resilience**: Automatic reconnection with exponential backoff (max 5 attempts)
+- **Network Status Banners**: Dynamic status indicators in video calls (connected/poor/reconnecting/disconnected)
 - **Offline Handling**: Blocks navigation on splash screen without internet
+- **Background Pause**: Connectivity monitoring pauses when app is in background
 
 ### User Experience
 - **Portrait-Only Mode**: Optimized for mobile portrait orientation
@@ -69,10 +71,15 @@ lib/
 
 #### Services
 - `ChimeService`: Amazon Chime SDK integration (Android native)
-- `ConnectivityService`: Internet connectivity monitoring
-- `NetworkResilienceManager`: Connection recovery and retry logic
+- `ConnectivityService`: Internet connectivity monitoring with periodic checks
+- `NetworkResilienceManager`: Connection recovery, retry logic, and state management
 - `EventLogger`: Centralized logging system
 - `MeetingStorageService`: Local meeting data storage
+
+#### Widgets
+- `NoInternetBottomSheet`: Modal dialog for connectivity loss (only when app is active)
+- `ReconnectionBanner`: Dynamic network status indicator in video calls
+- `ConnectivityWrapper`: App-wide connectivity monitoring with lifecycle awareness
 
 #### Repositories
 - `MeetingRepository`: Meeting API interactions
@@ -140,17 +147,45 @@ lib/
 
 ## Network Resilience
 
-### Connection States
-- `connected`: Normal operation
-- `poor`: Degraded connection quality
-- `reconnecting`: Attempting to reconnect
-- `disconnected`: Connection lost
+### Connectivity Monitoring
+- **Check Interval**: Every 3 seconds during active app usage
+- **Socket Timeout**: 5 seconds per connectivity check
+- **Debounce**: 1 second delay before showing "No Internet" dialog
+- **Background Behavior**: Monitoring pauses when app goes to background
+- **Resume Grace Period**: 3.5 second delay when returning from background to avoid false positives
 
-### Retry Strategy
-- Exponential backoff (1s → 2s → 4s → 8s → 16s)
-- Maximum 5 retry attempts
-- Jitter to prevent thundering herd
+### No Internet Bottom Sheet
+- **Trigger**: Appears when internet connection is lost (app must be active)
+- **Auto-dismiss**: Closes automatically when connection is restored
+- **Lifecycle Aware**: Dismissed when app goes to background
+- **Single Instance**: Prevents duplicate dialogs
+
+### Connection States (Video Calls)
+- `connected`: Normal operation (green indicator)
+- `poor`: Degraded connection quality (orange indicator)
+- `reconnecting`: Attempting to reconnect (orange indicator)
+- `disconnected`: Connection lost (red indicator)
+
+### NetworkResilienceManager
+Handles connection recovery during video calls with intelligent retry logic:
+
+#### Retry Strategy
+- **Exponential Backoff**: 1s → 2s → 4s → 8s → 16s → 30s (max)
+- **Maximum Attempts**: 5 retry attempts before giving up
+- **Jitter**: Random delay (±20%) to prevent thundering herd
+- **Stale Session Timeout**: 60 seconds without connection marks session as stale
+
+#### State Management
+- Tracks connection state changes
+- Broadcasts state updates via stream
+- Prevents duplicate disconnect events
+- Logs all network events with metadata
 - Automatic recovery on connection restore
+
+#### Integration
+- Listens to Chime SDK callbacks (`onConnectionBecamePoor`, `onConnectionRecovered`, `onAudioSessionDropped`)
+- Periodic connectivity checks every 5 seconds during video calls
+- Updates video call UI with real-time connection status
 
 ## Dependencies
 

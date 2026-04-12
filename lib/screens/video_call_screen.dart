@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/video_call_cubit.dart';
 import '../models/meeting_response.dart';
+import '../services/network_resilience_manager.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../widgets/button_widget.dart';
@@ -94,7 +95,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
 
                     Positioned(top: 0, left: 0, right: 0, child: ReconnectionBanner(connectionState: state.connectionState)),
 
-                    if (state.showControls) _buildTopBar(context),
+                    if (state.showControls) _buildTopBar(context, state),
 
                     if (state.showControls) _buildBottomControls(context, state),
 
@@ -316,7 +317,41 @@ class _VideoCallViewState extends State<_VideoCallView> {
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
+  Widget _buildTopBar(BuildContext context, VideoCallReady state) {
+    final connectionState = state.connectionState;
+    
+    String statusText;
+    Color statusColor;
+    Color backgroundColor;
+    Color borderColor;
+    
+    switch (connectionState) {
+      case NetworkConnectionState.connected:
+        statusText = 'CONNECTED';
+        statusColor = AppColors.secondary;
+        backgroundColor = AppColors.secondary.withOpacity(0.2);
+        borderColor = AppColors.secondary.withOpacity(0.4);
+        break;
+      case NetworkConnectionState.poor:
+        statusText = 'POOR CONNECTION';
+        statusColor = AppColors.statusWarning;
+        backgroundColor = AppColors.statusWarning.withOpacity(0.2);
+        borderColor = AppColors.statusWarning.withOpacity(0.4);
+        break;
+      case NetworkConnectionState.reconnecting:
+        statusText = 'RECONNECTING';
+        statusColor = AppColors.statusWarning;
+        backgroundColor = AppColors.statusWarning.withOpacity(0.2);
+        borderColor = AppColors.statusWarning.withOpacity(0.4);
+        break;
+      case NetworkConnectionState.disconnected:
+        statusText = 'DISCONNECTED';
+        statusColor = AppColors.statusError;
+        backgroundColor = AppColors.statusError.withOpacity(0.2);
+        borderColor = AppColors.statusError.withOpacity(0.4);
+        break;
+    }
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 48.0),
       decoration: BoxDecoration(
@@ -332,21 +367,21 @@ class _VideoCallViewState extends State<_VideoCallView> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
             decoration: BoxDecoration(
-              color: AppColors.secondary.withOpacity(0.2),
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(20.0),
-              border: Border.all(color: AppColors.secondary.withOpacity(0.4), width: 1.0),
+              border: Border.all(color: borderColor, width: 1.0),
             ),
             child: Row(
               children: [
                 Container(
                   width: 8.0,
                   height: 8.0,
-                  decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 8.0),
                 Text(
-                  'CONNECTED',
-                  style: AppTypography.labelLarge(),
+                  statusText,
+                  style: AppTypography.labelLarge(color: statusColor),
                 ),
               ],
             ),

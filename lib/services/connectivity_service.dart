@@ -19,7 +19,7 @@ class ConnectivityService {
         return false;
       }
 
-      final socket = await Socket.connect('8.8.8.8', 53, timeout: const Duration(seconds: 3));
+      final socket = await Socket.connect('8.8.8.8', 53, timeout: const Duration(seconds: 5));
       socket.destroy();
       return true;
     } on SocketException catch (_) {

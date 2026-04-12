@@ -31,39 +31,34 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
           emit(const ConnectivityConnected());
         }
       } else {
-        _disconnectedCount++;
-        
-        if (_disconnectedCount >= 2) {
-          _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
-            if (!_isPaused && _lastEmittedState) {
-              _lastEmittedState = false;
-              emit(const ConnectivityDisconnected());
-            }
-          });
-        }
+        _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
+          if (!_isPaused && _lastEmittedState) {
+            _lastEmittedState = false;
+            emit(const ConnectivityDisconnected());
+          }
+        });
       }
     });
   }
 
   void pauseMonitoring() {
     _isPaused = true;
+    _disconnectedCount = 0;
     _debounceTimer?.cancel();
   }
 
   void resumeMonitoring() {
     _isPaused = false;
     _disconnectedCount = 0;
+    _debounceTimer?.cancel();
     
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 2000), () async {
       if (!_isPaused) {
         final hasConnection = await _connectivityService.hasInternetConnection();
         
-        if (hasConnection) {
-          _disconnectedCount = 0;
-          if (!_lastEmittedState) {
-            _lastEmittedState = true;
-            emit(const ConnectivityConnected());
-          }
+        if (hasConnection && !_lastEmittedState) {
+          _lastEmittedState = true;
+          emit(const ConnectivityConnected());
         }
       }
     });

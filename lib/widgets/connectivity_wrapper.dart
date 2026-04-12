@@ -36,13 +36,20 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> with WidgetsB
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     
-    if (state == AppLifecycleState.resumed) {
-      context.read<ConnectivityCubit>().resumeMonitoring();
-    } else if (state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.paused) {
+      context.read<ConnectivityCubit>().pauseMonitoring();
       if (_isBottomSheetShown) {
         _hideNoInternetBottomSheet();
       }
-      context.read<ConnectivityCubit>().pauseMonitoring();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_isBottomSheetShown) {
+        _hideNoInternetBottomSheet();
+      }
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) {
+          context.read<ConnectivityCubit>().resumeMonitoring();
+        }
+      });
     }
   }
 
