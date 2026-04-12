@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import '../models/meeting_response.dart';
 import '../services/chime_service.dart';
 import '../services/network_resilience_manager.dart';
+import '../services/connectivity_service.dart';
 
 abstract class VideoCallState extends Equatable {
   const VideoCallState();
@@ -81,11 +82,14 @@ class VideoCallCubit extends Cubit<VideoCallState> {
   final NetworkResilienceManager _networkManager;
   final MeetingResponse meetingResponse;
   StreamSubscription<NetworkConnectionState>? _networkSubscription;
+  Timer? _connectivityCheckTimer;
   
   int? _localTileId;
   int? _remoteTileId;
   
   bool _remoteParticipantJoined = false;
+  
+  bool get hadRemoteParticipant => _remoteParticipantJoined;
 
   VideoCallCubit({required this.meetingResponse, ChimeService? chimeService, NetworkResilienceManager? networkManager})
     : _chimeService = chimeService ?? ChimeService(),
@@ -159,6 +163,20 @@ class VideoCallCubit extends Cubit<VideoCallState> {
           emit(currentState.copyWith(connectionState: connectionState));
         }
       });
+      
+      _chimeService.onConnectionBecamePoor = () {
+        _networkManager.onConnectionPoor();
+      };
+      
+      _chimeService.onConnectionRecovered = () {
+        _networkManager.onConnectionRecovered();
+      };
+      
+      _chimeService.onAudioSessionDropped = () {
+        _networkManager.onConnectionLost();
+      };
+      
+      _startConnectivityMonitoring();
 
       if (meetingResponse.data.meeting.mediaPlacement == null) {
         throw Exception(
@@ -169,6 +187,8 @@ class VideoCallCubit extends Cubit<VideoCallState> {
       final success = await _chimeService.initializeMeeting(meetingResponse);
 
       if (success) {
+        _networkManager.onConnectionRecovered();
+        
         emit(
           const VideoCallReady(
             isVideoEnabled: false,
@@ -257,7 +277,31 @@ class VideoCallCubit extends Cubit<VideoCallState> {
   @override
   Future<void> close() {
     _networkSubscription?.cancel();
+    _connectivityCheckTimer?.cancel();
     _chimeService.dispose();
     return super.close();
+  }
+  
+  void _startConnectivityMonitoring() {
+    _connectivityCheckTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      if (isClosed) {
+        timer.cancel();
+        return;
+      }
+      
+      final hasConnection = await ConnectivityService.instance.hasInternetConnection();
+      
+      if (!hasConnection) {
+        if (_networkManager.currentState != NetworkConnectionState.disconnected &&
+            _networkManager.currentState != NetworkConnectionState.reconnecting) {
+          _networkManager.onConnectionLost();
+        }
+      } else {
+        if (_networkManager.currentState == NetworkConnectionState.disconnected ||
+            _networkManager.currentState == NetworkConnectionState.reconnecting) {
+          _networkManager.onConnectionRecovered();
+        }
+      }
+    });
   }
 }

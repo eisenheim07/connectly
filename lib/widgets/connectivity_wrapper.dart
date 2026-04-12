@@ -14,15 +14,36 @@ class ConnectivityWrapper extends StatefulWidget {
   State<ConnectivityWrapper> createState() => _ConnectivityWrapperState();
 }
 
-class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
+class _ConnectivityWrapperState extends State<ConnectivityWrapper> with WidgetsBindingObserver {
   bool _isBottomSheetShown = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ConnectivityCubit>().startMonitoring();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    if (state == AppLifecycleState.resumed) {
+      context.read<ConnectivityCubit>().resumeMonitoring();
+    } else if (state == AppLifecycleState.paused) {
+      if (_isBottomSheetShown) {
+        _hideNoInternetBottomSheet();
+      }
+      context.read<ConnectivityCubit>().pauseMonitoring();
+    }
   }
 
   void _showNoInternetBottomSheet() {
