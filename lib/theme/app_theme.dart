@@ -46,20 +46,20 @@ class AppTheme {
         foregroundColor: AppColors.onSurface,
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        titleTextStyle: AppTypography.headlineSmall,
+        titleTextStyle: AppTypography.headlineSmall(),
       ),
 
       // Text Theme
-      textTheme: const TextTheme(
-        displayLarge: AppTypography.displayLarge,
-        displayMedium: AppTypography.displayMedium,
-        headlineSmall: AppTypography.headlineSmall,
-        titleMedium: AppTypography.titleMedium,
-        titleSmall: AppTypography.titleSmall,
-        labelMedium: AppTypography.labelMedium,
-        labelSmall: AppTypography.labelSmall,
-        bodyMedium: AppTypography.bodyMedium,
-        bodySmall: AppTypography.bodySmall,
+      textTheme: TextTheme(
+        displayLarge: AppTypography.displayLarge(),
+        displayMedium: AppTypography.displayMedium(),
+        headlineSmall: AppTypography.headlineSmall(),
+        titleMedium: AppTypography.titleMedium(),
+        titleSmall: AppTypography.titleSmall(),
+        labelMedium: AppTypography.labelMedium(),
+        labelSmall: AppTypography.labelSmall(),
+        bodyMedium: AppTypography.bodyMedium(),
+        bodySmall: AppTypography.bodySmall(),
       ),
 
       // Card Theme - Tonal Layering (No borders)
@@ -95,7 +95,7 @@ class AppTheme {
           horizontal: 16.0,
           vertical: 12.0,
         ),
-        hintStyle: AppTypography.bodyMediumSecondary,
+        hintStyle: AppTypography.bodyMediumSecondary(),
       ),
 
       // Elevated Button - Primary Actions
@@ -112,7 +112,7 @@ class AppTheme {
             horizontal: 24.0,
             vertical: 16.0,
           ),
-          textStyle: AppTypography.labelMedium,
+          textStyle: AppTypography.labelMedium(),
         ),
       ),
 
@@ -120,7 +120,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.onSurface,
-          textStyle: AppTypography.labelMedium,
+          textStyle: AppTypography.labelMedium(),
         ),
       ),
 
@@ -175,7 +175,7 @@ class AppTheme {
       // Snackbar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.surfaceContainerHighest,
-        contentTextStyle: AppTypography.bodyMedium,
+        contentTextStyle: AppTypography.bodyMedium(),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),

@@ -58,12 +58,12 @@ class _TestScenariosView extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   'Controlled Failure Matrix',
-                  style: AppTypography.headlineSmallBold,
+                  style: AppTypography.headlineSmallBold(),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Simulate various scenarios to test state management and resilience',
-                  style: AppTypography.bodyMediumSecondary,
+                  style: AppTypography.bodyMediumSecondary(),
                 ),
                 const SizedBox(height: 24),
                 _buildTestCard(
@@ -170,12 +170,12 @@ class _TestScenariosView extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             state.testName,
-            style: AppTypography.titleMediumBold,
+            style: AppTypography.titleMediumBold(),
           ),
           const SizedBox(height: 8),
           Text(
             'Completing in ${state.countdown} seconds...',
-            style: AppTypography.bodyMediumSecondary,
+            style: AppTypography.bodyMediumSecondary(),
           ),
         ],
       ),
@@ -208,10 +208,10 @@ class _TestScenariosView extends StatelessWidget {
           ),
           child: Icon(icon, color: color),
         ),
-        title: Text(title, style: AppTypography.titleSmallBold),
+        title: Text(title, style: AppTypography.titleSmallBold()),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: Text(description, style: AppTypography.bodySmallSecondary),
+          child: Text(description, style: AppTypography.bodySmallSecondary()),
         ),
         trailing: IconButton(
           icon: const Icon(Icons.play_arrow),

@@ -44,7 +44,7 @@ class PrimaryButton extends StatelessWidget {
               Flexible(
                 child: Text(
                   text,
-                  style: AppTypography.labelMedium.copyWith(
+                  style: AppTypography.labelMedium(
                     color: textColor ?? AppColors.onSecondary,
                     fontWeight: fontWeight ?? FontWeight.bold,
                     fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
@@ -57,7 +57,7 @@ class PrimaryButton extends StatelessWidget {
           )
         : Text(
             text,
-            style: AppTypography.labelMedium.copyWith(
+            style: AppTypography.labelMedium(
               color: textColor ?? AppColors.onSecondary,
               fontWeight: fontWeight ?? FontWeight.bold,
               fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
@@ -128,7 +128,7 @@ class OutlinedButtonWidget extends StatelessWidget {
               Flexible(
                 child: Text(
                   text,
-                  style: AppTypography.labelMedium.copyWith(
+                  style: AppTypography.labelMedium(
                     color: textColor ?? AppColors.onSurface,
                     fontWeight: fontWeight ?? FontWeight.bold,
                     fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
@@ -141,7 +141,7 @@ class OutlinedButtonWidget extends StatelessWidget {
           )
         : Text(
             text,
-            style: AppTypography.labelMedium.copyWith(
+            style: AppTypography.labelMedium(
               color: textColor ?? AppColors.onSurface,
               fontWeight: fontWeight ?? FontWeight.bold,
               fontSize: fontSize ?? SizeUtils.getFontSize(13.0),
@@ -189,7 +189,7 @@ class TextButtonWidget extends StatelessWidget {
       style: TextButton.styleFrom(padding: padding ?? EdgeInsets.zero),
       child: Text(
         text,
-        style: AppTypography.labelMedium.copyWith(
+        style: AppTypography.labelMedium(
           color: textColor ?? AppColors.primary,
           fontWeight: fontWeight ?? FontWeight.w600,
           fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
@@ -258,7 +258,7 @@ class PermissionButton extends StatelessWidget {
             Flexible(
               child: Text(
                 text,
-                style: isGranted ? AppTypography.labelMediumBoldDisabled : AppTypography.labelMediumBoldSecondary,
+                style: isGranted ? AppTypography.labelMediumBoldDisabled() : AppTypography.labelMediumBoldSecondary(),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
@@ -307,7 +307,7 @@ class DangerButton extends StatelessWidget {
               Flexible(
                 child: Text(
                   text,
-                  style: AppTypography.labelMedium.copyWith(
+                  style: AppTypography.labelMedium(
                     color: AppColors.onSurface,
                     fontWeight: fontWeight ?? FontWeight.bold,
                     fontSize: fontSize ?? SizeUtils.getFontSize(12.0),
@@ -320,7 +320,7 @@ class DangerButton extends StatelessWidget {
           )
         : Text(
             text,
-            style: AppTypography.labelMedium.copyWith(
+            style: AppTypography.labelMedium(
               color: AppColors.onSurface,
               fontWeight: fontWeight ?? FontWeight.bold,
               fontSize: fontSize ?? SizeUtils.getFontSize(12.0),

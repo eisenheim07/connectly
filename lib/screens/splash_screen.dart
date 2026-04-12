@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
         body: Center(
           child: Text(
             'Connectly',
-            style: AppTypography.displayLarge,
+            style: AppTypography.displayLarge(),
           ),
         ),
       ),

@@ -132,7 +132,7 @@ class _EventLogScreenState extends State<EventLogScreen> {
                 children: [
                   Icon(Icons.event_note, size: 64, color: AppColors.onSurfaceVariant.withOpacity(0.5)),
                   const SizedBox(height: 16),
-                  Text('No events logged yet', style: AppTypography.bodyMediumSecondary),
+                  Text('No events logged yet', style: AppTypography.bodyMediumSecondary()),
                 ],
               ),
             )
@@ -159,11 +159,11 @@ class _EventLogScreenState extends State<EventLogScreen> {
         ),
         title: Text(
           event.message,
-          style: AppTypography.bodyMediumSemiBold,
+          style: AppTypography.bodyMediumSemiBold(),
         ),
         subtitle: Text(
           '${event.timestamp.hour.toString().padLeft(2, '0')}:${event.timestamp.minute.toString().padLeft(2, '0')}:${event.timestamp.second.toString().padLeft(2, '0')}.${event.timestamp.millisecond.toString().padLeft(3, '0')}',
-          style: AppTypography.bodySmallSecondary,
+          style: AppTypography.bodySmallSecondary(),
         ),
         children: [
           Padding(
@@ -176,7 +176,7 @@ class _EventLogScreenState extends State<EventLogScreen> {
                 _buildDetailRow('Timestamp', event.timestamp.toIso8601String()),
                 if (event.metadata != null && event.metadata!.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  Text('Metadata:', style: AppTypography.bodySmallBold),
+                  Text('Metadata:', style: AppTypography.bodySmallBold()),
                   const SizedBox(height: 4),
                   Container(
                     width: double.infinity,
@@ -187,13 +187,13 @@ class _EventLogScreenState extends State<EventLogScreen> {
                     ),
                     child: Text(
                       jsonEncode(event.metadata),
-                      style: AppTypography.bodySmall.copyWith(fontFamily: 'monospace'),
+                      style: AppTypography.bodySmall(fontFamily: 'monospace'),
                     ),
                   ),
                 ],
                 if (event.stackTrace != null) ...[
                   const SizedBox(height: 8),
-                  Text('Stack Trace:', style: AppTypography.bodySmallBold),
+                  Text('Stack Trace:', style: AppTypography.bodySmallBold()),
                   const SizedBox(height: 4),
                   Container(
                     width: double.infinity,
@@ -204,7 +204,7 @@ class _EventLogScreenState extends State<EventLogScreen> {
                     ),
                     child: Text(
                       event.stackTrace!,
-                      style: AppTypography.bodySmall.copyWith(fontFamily: 'monospace'),
+                      style: AppTypography.bodySmall(fontFamily: 'monospace'),
                       maxLines: 5,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -226,10 +226,10 @@ class _EventLogScreenState extends State<EventLogScreen> {
         children: [
           SizedBox(
             width: 100,
-            child: Text('$label:', style: AppTypography.bodySmallBold),
+            child: Text('$label:', style: AppTypography.bodySmallBold()),
           ),
           Expanded(
-            child: Text(value, style: AppTypography.bodySmall),
+            child: Text(value, style: AppTypography.bodySmall()),
           ),
         ],
       ),

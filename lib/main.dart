@@ -7,6 +7,11 @@ import 'screens/splash_screen.dart';
 import 'cubits/splash_cubit.dart';
 import 'cubits/meeting_cubit.dart';
 import 'cubits/permission_cubit.dart';
+import 'cubits/connectivity_cubit.dart';
+import 'widgets/connectivity_wrapper.dart';
+
+// Global navigator key to access navigator from anywhere
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,26 +31,32 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => SplashCubit()),
         BlocProvider(create: (context) => MeetingCubit()),
         BlocProvider(create: (context) => PermissionCubit()),
+        BlocProvider(create: (context) => ConnectivityCubit()),
       ],
-      child: MaterialApp(
-        title: 'Connectly',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.darkTheme,
-        builder: (context, child) {
-          SizeUtils.init(context);
-          // Limit text scale to prevent text from being too large on different devices
-          final mediaQuery = MediaQuery.of(context);
-          final constrainedTextScale = mediaQuery.textScaler.clamp(
-            minScaleFactor: 0.8,
-            maxScaleFactor: 1.2,
-          );
-          
-          return MediaQuery(
-            data: mediaQuery.copyWith(textScaler: constrainedTextScale),
-            child: child!,
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            navigatorKey: navigatorKey,
+            title: 'Connectly',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.darkTheme,
+            builder: (builderContext, child) {
+              SizeUtils.init(builderContext);
+              // Limit text scale to prevent text from being too large on different devices
+              final mediaQuery = MediaQuery.of(builderContext);
+              final constrainedTextScale = mediaQuery.textScaler.clamp(
+                minScaleFactor: 0.8,
+                maxScaleFactor: 1.2,
+              );
+              
+              return MediaQuery(
+                data: mediaQuery.copyWith(textScaler: constrainedTextScale),
+                child: ConnectivityWrapper(child: child!),
+              );
+            },
+            home: const SplashScreen(),
           );
         },
-        home: const SplashScreen(),
       ),
     );
   }

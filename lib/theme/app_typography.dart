@@ -6,329 +6,597 @@ import 'app_colors.dart';
 class AppTypography {
   AppTypography._();
 
+  // Default font family and weights
   static const String fontFamily = 'Inter';
+  static const String _defaultFontFamily = 'Inter';
+  static const FontWeight _defaultFontWeight = FontWeight.w400;
 
-  // Display - Large scale status and countdowns
-  static const TextStyle displayLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 48.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.25,
-    height: 1.12,
-    color: AppColors.onSurface,
-  );
+  // Display text styles (largest)
+  static TextStyle displayLarge({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+    int? maxLines,
+    TextOverflow? overflow,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 48.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? -0.25,
+      height: height ?? 1.12,
+    );
+  }
 
-  static const TextStyle displayMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 36.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0,
-    height: 1.16,
-    color: AppColors.onSurface,
-  );
+  static TextStyle displayMedium({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 36.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0,
+      height: height ?? 1.16,
+    );
+  }
 
-  // Headline - Participant names in call header
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 22.0,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-    height: 1.33,
-    color: AppColors.onSurface,
-  );
+  static TextStyle displayMediumBlack({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 36.0,
+      fontWeight: fontWeight ?? FontWeight.w900,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0,
+      height: height ?? 1.1,
+    );
+  }
 
-  // Title - Section headers
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 18.0,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-    height: 1.44,
-    color: AppColors.onSurface,
-  );
+  static TextStyle displayMediumSecondary({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 36.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.secondary,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0,
+      height: height ?? 1.16,
+    );
+  }
 
-  static const TextStyle titleMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 16.0,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.15,
-    height: 1.5,
-    color: AppColors.onSurface,
-  );
+  // Headline text styles
+  static TextStyle headlineSmall({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 22.0,
+      fontWeight: fontWeight ?? FontWeight.w600,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0,
+      height: height ?? 1.33,
+    );
+  }
 
-  static const TextStyle titleSmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.1,
-    height: 1.43,
-    color: AppColors.onSurface,
-  );
+  static TextStyle headlineSmallBold({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 22.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0,
+      height: height ?? 1.33,
+    );
+  }
 
-  // Label - Button captions and utility text
-  static const TextStyle labelLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.1,
-    height: 1.43,
-    color: AppColors.onSurface,
-  );
+  static TextStyle headlineSmallSecondary({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 22.0,
+      fontWeight: fontWeight ?? FontWeight.w600,
+      color: color ?? AppColors.secondary,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0,
+      height: height ?? 1.33,
+    );
+  }
 
-  static const TextStyle labelMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12.0,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.33,
-    color: AppColors.onSurface,
-  );
+  // Title text styles
+  static TextStyle titleLarge({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 18.0,
+      fontWeight: fontWeight ?? FontWeight.w600,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0,
+      height: height ?? 1.44,
+    );
+  }
 
-  static const TextStyle labelSmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11.0,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.45,
-    color: AppColors.onSurfaceVariant,
-  );
+  static TextStyle titleLargeBold({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 18.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0,
+      height: height ?? 1.44,
+    );
+  }
 
-  // Body - General content
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 16.0,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.5,
-    height: 1.5,
-    color: AppColors.onSurface,
-  );
+  static TextStyle titleMedium({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 16.0,
+      fontWeight: fontWeight ?? FontWeight.w600,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.15,
+      height: height ?? 1.5,
+    );
+  }
 
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.25,
-    height: 1.43,
-    color: AppColors.onSurface,
-  );
+  static TextStyle titleMediumBold({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 16.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.15,
+      height: height ?? 1.5,
+    );
+  }
 
-  static const TextStyle bodyMediumSemiBold = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.25,
-    height: 1.43,
-    color: AppColors.onSurface,
-  );
+  static TextStyle titleSmall({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? FontWeight.w600,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.1,
+      height: height ?? 1.43,
+    );
+  }
 
-  static const TextStyle bodyMediumSecondary = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.25,
-    height: 1.43,
-    color: AppColors.onSurfaceVariant,
-  );
+  static TextStyle titleSmallBold({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.1,
+      height: height ?? 1.43,
+    );
+  }
 
-  static const TextStyle bodyMediumMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.25,
-    height: 1.43,
-    color: AppColors.onSurface,
-  );
+  // Body text styles (most common)
+  static TextStyle bodyLarge({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 16.0,
+      fontWeight: fontWeight ?? _defaultFontWeight,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.5,
+    );
+  }
 
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12.0,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.4,
-    height: 1.33,
-    color: AppColors.onSurfaceVariant,
-  );
+  static TextStyle bodyMedium({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? _defaultFontWeight,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.25,
+      height: height ?? 1.43,
+    );
+  }
 
-  static const TextStyle bodySmallBold = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.4,
-    height: 1.33,
-    color: AppColors.onSurfaceVariant,
-  );
+  static TextStyle bodyMediumSemiBold({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? FontWeight.w600,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.25,
+      height: height ?? 1.43,
+    );
+  }
 
-  static const TextStyle bodySmallSecondary = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12.0,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.4,
-    height: 1.33,
-    color: AppColors.onSurfaceVariant,
-  );
+  static TextStyle bodyMediumSecondary({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? _defaultFontWeight,
+      color: color ?? AppColors.onSurfaceVariant,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.25,
+      height: height ?? 1.43,
+    );
+  }
 
-  static const TextStyle bodySmallHint = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12.0,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.4,
-    height: 1.33,
-    color: AppColors.onSurfaceVariantHint,
-  );
+  static TextStyle bodyMediumMedium({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? FontWeight.w500,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.25,
+      height: height ?? 1.43,
+    );
+  }
 
-  static const TextStyle bodySmallDimmed = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12.0,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.4,
-    height: 1.33,
-    color: AppColors.onSurfaceVariantDimmed,
-  );
+  static TextStyle bodySmall({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 12.0,
+      fontWeight: fontWeight ?? _defaultFontWeight,
+      color: color ?? AppColors.onSurfaceVariant,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.4,
+      height: height ?? 1.33,
+    );
+  }
 
-  // Display variants
-  static const TextStyle displayMediumBlack = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 36.0,
-    fontWeight: FontWeight.w900,
-    letterSpacing: 0,
-    height: 1.1,
-    color: AppColors.onSurface,
-  );
+  static TextStyle bodySmallBold({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 12.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurfaceVariant,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.4,
+      height: height ?? 1.33,
+    );
+  }
 
-  static const TextStyle displayMediumSecondary = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 36.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0,
-    height: 1.16,
-    color: AppColors.secondary,
-  );
+  static TextStyle bodySmallSecondary({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 12.0,
+      fontWeight: fontWeight ?? _defaultFontWeight,
+      color: color ?? AppColors.onSurfaceVariant,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.4,
+      height: height ?? 1.33,
+    );
+  }
 
-  // Headline variants
-  static const TextStyle headlineSmallBold = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 22.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0,
-    height: 1.33,
-    color: AppColors.onSurface,
-  );
+  static TextStyle bodySmallHint({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 12.0,
+      fontWeight: fontWeight ?? _defaultFontWeight,
+      color: color ?? AppColors.onSurfaceVariantHint,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.4,
+      height: height ?? 1.33,
+    );
+  }
 
-  static const TextStyle headlineSmallSecondary = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 22.0,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-    height: 1.33,
-    color: AppColors.secondary,
-  );
+  static TextStyle bodySmallDimmed({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 12.0,
+      fontWeight: fontWeight ?? _defaultFontWeight,
+      color: color ?? AppColors.onSurfaceVariantDimmed,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.4,
+      height: height ?? 1.33,
+    );
+  }
 
-  // Title variants
-  static const TextStyle titleLargeBold = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 18.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0,
-    height: 1.44,
-    color: AppColors.onSurface,
-  );
+  // Label text styles (smallest)
+  static TextStyle labelLarge({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.1,
+      height: height ?? 1.43,
+    );
+  }
 
-  static const TextStyle titleMediumBold = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 16.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.15,
-    height: 1.5,
-    color: AppColors.onSurface,
-  );
+  static TextStyle labelMedium({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 12.0,
+      fontWeight: fontWeight ?? FontWeight.w500,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.33,
+    );
+  }
 
-  static const TextStyle titleSmallBold = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.1,
-    height: 1.43,
-    color: AppColors.onSurface,
-  );
+  static TextStyle labelMediumWhite({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 12.0,
+      fontWeight: fontWeight ?? FontWeight.w500,
+      color: color ?? AppColors.white,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.33,
+    );
+  }
 
-  // Label variants
-  static const TextStyle labelMediumWhite = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12.0,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.33,
-    color: AppColors.white,
-  );
+  static TextStyle labelMediumBoldSecondary({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSecondary,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.33,
+    );
+  }
 
-  static const TextStyle labelSmallWhite = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11.0,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.45,
-    color: AppColors.white,
-  );
+  static TextStyle labelMediumBoldDisabled({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurfaceVariant,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.33,
+    );
+  }
 
-  static const TextStyle labelSmallPrimary = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11.0,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.45,
-    color: AppColors.onSurface,
-  );
+  static TextStyle labelSmall({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
+    return TextStyle(
+      fontSize: fontSize ?? 11.0,
+      fontWeight: fontWeight ?? FontWeight.w500,
+      color: color ?? AppColors.onSurfaceVariant,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.45,
+    );
+  }
 
-  static const TextStyle labelSmallSecondary = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11.0,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.45,
-    color: AppColors.onSurfaceVariant,
-  );
+  static TextStyle labelSmallWhite({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 11.0,
+      fontWeight: fontWeight ?? FontWeight.w500,
+      color: color ?? AppColors.white,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.45,
+    );
+  }
 
-  static const TextStyle labelSmallBold = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.5,
-    height: 1.45,
-    color: AppColors.tertiary,
-  );
+  static TextStyle labelSmallPrimary({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 11.0,
+      fontWeight: fontWeight ?? FontWeight.w500,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.45,
+    );
+  }
 
-  static const TextStyle labelSmallBoldPrimary = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.5,
-    height: 1.45,
-    color: AppColors.onSurface,
-  );
+  static TextStyle labelSmallSecondary({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 11.0,
+      fontWeight: fontWeight ?? FontWeight.w500,
+      color: color ?? AppColors.onSurfaceVariant,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.45,
+    );
+  }
 
-  static const TextStyle labelSmallTimestamp = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 10.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 1.2,
-    color: AppColors.onSurfaceVariantDimmed,
-  );
+  static TextStyle labelSmallBold({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 11.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.tertiary,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.45,
+    );
+  }
 
-  // Permission button styles
-  static const TextStyle labelMediumBoldSecondary = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.5,
-    height: 1.33,
-    color: AppColors.onSecondary,
-  );
+  static TextStyle labelSmallBoldPrimary({
+    Color? color,
+    FontWeight? fontWeight,
+    String? fontFamily,
+    double? fontSize,
+    double? letterSpacing,
+    double? height,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 11.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 0.5,
+      height: height ?? 1.45,
+    );
+  }
 
-  static const TextStyle labelMediumBoldDisabled = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.5,
-    height: 1.33,
-    color: AppColors.onSurfaceVariant,
-  );
+  static TextStyle labelSmallTimestamp({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing}) {
+    return TextStyle(
+      fontSize: fontSize ?? 10.0,
+      fontWeight: fontWeight ?? FontWeight.w700,
+      color: color ?? AppColors.onSurfaceVariantDimmed,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing ?? 1.2,
+    );
+  }
+
+  // Utility method to create custom text style with all defaults
+  static TextStyle custom({
+    double? fontSize,
+    FontWeight? fontWeight,
+    Color? color,
+    String? fontFamily,
+    double? letterSpacing,
+    double? height,
+    TextDecoration? decoration,
+    Color? decorationColor,
+  }) {
+    return TextStyle(
+      fontSize: fontSize ?? 14.0,
+      fontWeight: fontWeight ?? _defaultFontWeight,
+      color: color ?? AppColors.onSurface,
+      fontFamily: fontFamily ?? _defaultFontFamily,
+      letterSpacing: letterSpacing,
+      height: height,
+      decoration: decoration,
+      decorationColor: decorationColor,
+    );
+  }
 }
