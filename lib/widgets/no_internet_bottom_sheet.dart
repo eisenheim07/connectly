@@ -37,7 +37,6 @@ class NoInternetBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle bar
           Container(
             width: SizeUtils.getSize(40.0),
             height: SizeUtils.getSize(4.0),
@@ -48,7 +47,6 @@ class NoInternetBottomSheet extends StatelessWidget {
           ),
           SizedBox(height: SizeUtils.getSize(32.0)),
 
-          // Icon
           Container(
             width: SizeUtils.getSize(80.0),
             height: SizeUtils.getSize(80.0),
@@ -57,15 +55,12 @@ class NoInternetBottomSheet extends StatelessWidget {
           ),
           SizedBox(height: SizeUtils.getSize(24.0)),
 
-          // Title
           Text('No Internet Connection', style: AppTypography.headlineSmallBold(), textAlign: TextAlign.center),
           SizedBox(height: SizeUtils.getSize(8.0)),
 
-          // Message
           Text('Please check your internet connection and try again.', style: AppTypography.bodyMediumSecondary(), textAlign: TextAlign.center),
           SizedBox(height: SizeUtils.getSize(32.0)),
 
-          // Try Again Button
           BlocBuilder<ConnectivityCubit, ConnectivityState>(
             builder: (context, state) {
               final isChecking = state is ConnectivityChecking;

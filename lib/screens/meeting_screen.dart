@@ -71,12 +71,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
             listener: (context, state) {
               if (state is MeetingError) {
                 context.flushBarErrorMessage(message: state.message);
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   SnackBar(
-                //     content: Text(state.message),
-                //     backgroundColor: AppColors.error,
-                //   ),
-                // );
               }
 
               if (state is MeetingCreated) {
@@ -170,20 +164,12 @@ class _MeetingScreenState extends State<MeetingScreen> {
                       text: 'Copy Details',
                       onPressed: () {
                         final meetingId = state.meetingResponse.data.meeting.meetingId;
-                        // Extract audioHostId without port (remove :3478)
                         final audioHostUrl = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl ?? '';
                         final audioHostId = audioHostUrl.contains(':') ? audioHostUrl.split(':').first : audioHostUrl;
                         final copyText = '{"meetingId":"$meetingId","audioHostId":"$audioHostId"}';
 
                         Clipboard.setData(ClipboardData(text: copyText));
                         context.flushBarSuccessMessage(message: 'Meeting details copied to clipboard');
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   const SnackBar(
-                        //     content: Text('Meeting details copied to clipboard'),
-                        //     backgroundColor: AppColors.secondary,
-                        //     duration: Duration(seconds: 2),
-                        //   ),
-                        // );
                       },
                       icon: Icons.copy,
                     ),
@@ -193,19 +179,15 @@ class _MeetingScreenState extends State<MeetingScreen> {
                     child: PrimaryButton(
                       text: 'Start Call',
                       onPressed: () {
-                        // Close bottom sheet
                         Navigator.pop(bottomSheetContext);
 
-                        // Trigger loading state
                         context.read<MeetingCubit>().setLoading();
 
-                        // Navigate after delay
                         Future.delayed(const Duration(milliseconds: 1500), () {
                           if (context.mounted) {
                             Navigator.of(
                               context,
                             ).push(MaterialPageRoute(builder: (_) => VideoCallScreen(meetingResponse: state.meetingResponse))).then((_) {
-                              // Reset to initial state when returning from video call
                               context.read<MeetingCubit>().reset();
                             });
                           }
@@ -361,16 +343,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
               if (meetingDetails.isEmpty) {
                 context.flushBarErrorMessage(message: 'Please paste meeting details');
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   const SnackBar(
-                //     content: Text('Please paste meeting details'),
-                //     backgroundColor: AppColors.error,
-                //   ),
-                // );
                 return;
               }
 
-              // Join with meeting details
               context.read<MeetingCubit>().joinWithMeetingDetails(meetingDetails);
             },
             width: double.infinity,

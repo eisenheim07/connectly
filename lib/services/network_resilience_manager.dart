@@ -131,21 +131,16 @@ class NetworkResilienceManager {
   }
 
   int _calculateBackoffDelay(int attempt) {
-    // Exponential backoff with jitter
     final exponentialDelay = baseRetryDelayMs * (1 << (attempt - 1));
     final cappedDelay = exponentialDelay.clamp(baseRetryDelayMs, maxRetryDelayMs);
     
-    // Add jitter (±20%)
     final jitter = (cappedDelay * 0.2 * (DateTime.now().millisecond / 1000)).round();
     return cappedDelay + jitter;
   }
 
   void _attemptReconnect() {
-    // This would trigger actual reconnection logic in ChimeService
-    // For now, we just log it
     _logger.logInfo('Reconnect attempt triggered', metadata: {'attempt': _reconnectAttempts});
 
-    // If reconnect fails, schedule next attempt
     if (_currentState != NetworkConnectionState.connected) {
       _scheduleReconnect();
     }

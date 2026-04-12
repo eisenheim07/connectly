@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 
-/// Native video view widget for Amazon Chime SDK
 class ChimeVideoView extends StatelessWidget {
   final int? tileId;
   final bool isLocalVideo;
@@ -19,10 +18,8 @@ class ChimeVideoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // This is used in the platform side to register the view.
     const String viewType = 'chime-video-view';
     
-    // Pass parameters to the platform side.
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'tileId': tileId,
       'isLocalVideo': isLocalVideo,

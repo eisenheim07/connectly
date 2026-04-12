@@ -4,20 +4,16 @@ import '../models/meeting_response.dart';
 import 'event_logger.dart';
 import 'network_resilience_manager.dart';
 
-/// Service to handle Amazon Chime SDK integration via platform channels
 class ChimeService {
   static const MethodChannel _channel = MethodChannel('com.connectly/chime');
   
-  // Callbacks for video tile events
   Function(int tileId, String? attendeeId, bool isLocal)? onVideoTileAdded;
   Function(int tileId)? onVideoTileRemoved;
   
-  // Callbacks for connection events
   Function()? onConnectionBecamePoor;
   Function()? onConnectionRecovered;
   Function()? onAudioSessionDropped;
   
-  // Callback for when remote attendee leaves
   Function(String attendeeId)? onAttendeeLeft;
   
   ChimeService() {
@@ -80,7 +76,6 @@ class ChimeService {
   final EventLogger _logger = EventLogger();
   final NetworkResilienceManager _networkManager = NetworkResilienceManager();
 
-  /// Initialize Chime meeting with meeting response data
   Future<bool> initializeMeeting(MeetingResponse meetingResponse) async {
     try {
       _logger.log(
@@ -133,7 +128,6 @@ class ChimeService {
     }
   }
 
-  /// Start local video
   Future<bool> startLocalVideo() async {
     try {
       _logger.log(type: EventType.videoStarted, message: 'Starting local video');
@@ -151,7 +145,6 @@ class ChimeService {
     }
   }
 
-  /// Stop local video
   Future<bool> stopLocalVideo() async {
     try {
       _logger.log(type: EventType.videoStopped, message: 'Stopping local video');
@@ -169,7 +162,6 @@ class ChimeService {
     }
   }
 
-  /// Mute local audio
   Future<bool> muteLocalAudio() async {
     try {
       _logger.log(type: EventType.audioMuted, message: 'Muting local audio');
@@ -187,7 +179,6 @@ class ChimeService {
     }
   }
 
-  /// Unmute local audio
   Future<bool> unmuteLocalAudio() async {
     try {
       _logger.log(type: EventType.audioUnmuted, message: 'Unmuting local audio');
@@ -205,7 +196,6 @@ class ChimeService {
     }
   }
 
-  /// Switch camera (front/back)
   Future<bool> switchCamera() async {
     try {
       _logger.log(type: EventType.cameraToggled, message: 'Switching camera');
@@ -223,7 +213,6 @@ class ChimeService {
     }
   }
 
-  /// Leave meeting
   Future<bool> leaveMeeting() async {
     try {
       _logger.log(type: EventType.meetingLeft, message: 'Leaving meeting');
@@ -242,7 +231,6 @@ class ChimeService {
     }
   }
 
-  /// Get list of active attendees
   Future<List<String>> getAttendees() async {
     try {
       final result = await _channel.invokeMethod('getAttendees');
@@ -253,7 +241,6 @@ class ChimeService {
     }
   }
 
-  /// Rebind video tiles to current views (useful after view recreation)
   Future<bool> rebindVideoTiles() async {
     try {
       final result = await _channel.invokeMethod('rebindVideoTiles');
@@ -263,13 +250,11 @@ class ChimeService {
     }
   }
 
-  /// Dispose resources
   Future<void> dispose() async {
     try {
       await _channel.invokeMethod('dispose');
       _networkManager.reset();
     } catch (e) {
-      // Silently handle dispose errors
       _logger.logWarning('Error during dispose: $e');
     }
   }

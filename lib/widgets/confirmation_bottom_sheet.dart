@@ -78,7 +78,6 @@ class ConfirmationBottomSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               width: 40.0,
               height: 4.0,
@@ -89,7 +88,6 @@ class ConfirmationBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 32.0),
 
-            // Icon
             if (icon != null) ...[
               Container(
                 width: 80.0,
@@ -107,7 +105,6 @@ class ConfirmationBottomSheet extends StatelessWidget {
               const SizedBox(height: 24.0),
             ],
 
-            // Title
             Text(
               title,
               style: AppTypography.headlineSmallBold(),
@@ -115,7 +112,6 @@ class ConfirmationBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 8.0),
 
-            // Message
             Text(
               message,
               style: AppTypography.bodyMediumSecondary(),
@@ -123,7 +119,6 @@ class ConfirmationBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 32.0),
 
-            // Buttons
             Row(
               children: [
                 Expanded(

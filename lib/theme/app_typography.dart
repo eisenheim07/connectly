@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
-/// The Hyper-Focused Lens Typography System
-/// Editorial Authority with Inter font family
 class AppTypography {
   AppTypography._();
 
-  // Default font family and weights
   static const String fontFamily = 'Inter';
   static const String _defaultFontFamily = 'Inter';
   static const FontWeight _defaultFontWeight = FontWeight.w400;
 
-  // Display text styles (largest)
   static TextStyle displayLarge({
     Color? color,
     FontWeight? fontWeight,
@@ -86,7 +82,6 @@ class AppTypography {
     );
   }
 
-  // Headline text styles
   static TextStyle headlineSmall({
     Color? color,
     FontWeight? fontWeight,
@@ -141,7 +136,6 @@ class AppTypography {
     );
   }
 
-  // Title text styles
   static TextStyle titleLarge({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
     return TextStyle(
       fontSize: fontSize ?? 18.0,
@@ -229,7 +223,6 @@ class AppTypography {
     );
   }
 
-  // Body text styles (most common)
   static TextStyle bodyLarge({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
     return TextStyle(
       fontSize: fontSize ?? 16.0,
@@ -389,7 +382,6 @@ class AppTypography {
     );
   }
 
-  // Label text styles (smallest)
   static TextStyle labelLarge({Color? color, FontWeight? fontWeight, String? fontFamily, double? fontSize, double? letterSpacing, double? height}) {
     return TextStyle(
       fontSize: fontSize ?? 14.0,
@@ -577,7 +569,6 @@ class AppTypography {
     );
   }
 
-  // Utility method to create custom text style with all defaults
   static TextStyle custom({
     double? fontSize,
     FontWeight? fontWeight,

@@ -42,7 +42,6 @@ class _PermissionScreenState extends State<PermissionScreen> {
         });
       }
     } catch (e) {
-      debugPrint('Error initializing camera: $e');
     }
   }
 
@@ -50,7 +49,6 @@ class _PermissionScreenState extends State<PermissionScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Allow back navigation to close the app from permission screen
         return true;
       },
       child: Scaffold(

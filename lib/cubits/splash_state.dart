@@ -15,6 +15,10 @@ class SplashLoading extends SplashState {
   const SplashLoading();
 }
 
+class SplashWaitingForInternet extends SplashState {
+  const SplashWaitingForInternet();
+}
+
 class NavigateToPermission extends SplashState {
   const NavigateToPermission();
 }

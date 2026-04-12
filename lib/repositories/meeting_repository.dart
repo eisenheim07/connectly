@@ -23,7 +23,6 @@ class MeetingRepository {
   }
 
   Future<MeetingResponse> joinAsClientWithMediaPlacement(String meetingId, String mediaPlacementJson) async {
-    // Get client token from API
     final clientResponse = await _apiService.joinMeeting(
       userType: AppConstants.userTypeClient,
       meetingId: meetingId,
@@ -33,15 +32,13 @@ class MeetingRepository {
       final mediaPlacementData = json.decode(mediaPlacementJson) as Map<String, dynamic>;
       final mediaPlacement = MediaPlacement.fromJson(mediaPlacementData);
       
-      // Create a complete meeting object with the provided MediaPlacement
       final completeMeeting = Meeting(
         meetingId: meetingId,
         externalMeetingId: clientResponse.data.meeting.externalMeetingId,
-        mediaRegion: 'ap-southeast-1', // Default region
+        mediaRegion: 'ap-southeast-1',
         mediaPlacement: mediaPlacement,
       );
       
-      // Return response with complete meeting config
       return MeetingResponse(
         status: clientResponse.status,
         message: clientResponse.message,
@@ -57,33 +54,27 @@ class MeetingRepository {
 
   Future<MeetingResponse> joinAsClientWithFullResponse(String fullApiResponse) async {
     try {
-      // Parse the full API response
       final responseData = json.decode(fullApiResponse) as Map<String, dynamic>;
       
-      // Extract meeting data
       final data = responseData['data'] as Map<String, dynamic>;
       final meetingData = data['meeting'] as Map<String, dynamic>;
       final attendeeData = data['attendee'] as Map<String, dynamic>;
       
-      // Extract meeting ID
       final meetingId = meetingData['MeetingId'] as String;
       
-      // Get client token from API (to get client attendee, not agent attendee)
       final clientResponse = await _apiService.joinMeeting(
         userType: AppConstants.userTypeClient,
         meetingId: meetingId,
       );
 
-      // Parse the meeting object from the pasted response
       final meeting = Meeting.fromJson(meetingData);
       
-      // Return response with meeting config from pasted response + client attendee from API
       return MeetingResponse(
         status: clientResponse.status,
         message: 'Joined meeting successfully',
         data: MeetingData(
-          meeting: meeting, // Full meeting config from pasted response
-          attendee: clientResponse.data.attendee, // Client attendee from API
+          meeting: meeting,
+          attendee: clientResponse.data.attendee,
         ),
       );
     } catch (e) {

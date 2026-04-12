@@ -88,22 +88,16 @@ class _VideoCallViewState extends State<_VideoCallView> {
                 onTap: () => context.read<VideoCallCubit>().toggleControls(),
                 child: Stack(
                   children: [
-                    // Remote video view (full screen)
                     _buildRemoteVideoView(context, state),
 
-                    // Local video view (picture-in-picture)
                     _buildLocalVideoView(context, state),
 
-                    // Reconnection Banner (at top)
                     Positioned(top: 0, left: 0, right: 0, child: ReconnectionBanner(connectionState: state.connectionState)),
 
-                    // Top Bar
                     if (state.showControls) _buildTopBar(context),
 
-                    // Bottom Controls
                     if (state.showControls) _buildBottomControls(context, state),
 
-                    // Tap hint when controls are hidden
                     if (!state.showControls)
                       Positioned(
                         bottom: 20.0,
@@ -136,19 +130,15 @@ class _VideoCallViewState extends State<_VideoCallView> {
 
     return Stack(
       children: [
-        // Remote video (always rendered, full screen) - ignore pointer to allow taps through
         Positioned.fill(
           child: IgnorePointer(child: const ChimeVideoView(key: ValueKey('remote_video'), isLocalVideo: false)),
         ),
 
-        // Remote video placeholder overlay
         if (!state.hasRemoteVideo)
-          // Participant hasn't joined yet OR left the meeting
           Positioned.fill(
             child: state.remoteParticipantLeft ? _buildParticipantLeftPlaceholder(remoteUserName) : _buildWaitingPlaceholder(remoteUserName),
           )
         else if (!state.remoteVideoEnabled)
-          // Participant joined but video is off
           Positioned.fill(child: _buildCameraOffPlaceholder(remoteUserName)),
       ],
     );
@@ -174,12 +164,10 @@ class _VideoCallViewState extends State<_VideoCallView> {
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
-            // Always render the video view with a stable key - ignore pointer to allow taps through
             Positioned.fill(
               child: IgnorePointer(child: const ChimeVideoView(key: ValueKey('local_video'), isLocalVideo: true)),
             ),
 
-            // Loading overlay
             if (state.isVideoLoading)
               Positioned.fill(
                 child: Container(
@@ -200,8 +188,7 @@ class _VideoCallViewState extends State<_VideoCallView> {
                   ),
                 ),
               ),
-
-            // Camera off overlay
+            
             if (!state.isVideoEnabled && !state.isVideoLoading)
               Positioned.fill(
                 child: Container(
@@ -245,7 +232,6 @@ class _VideoCallViewState extends State<_VideoCallView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Profile avatar
             Container(
               width: 120.0,
               height: 120.0,
@@ -264,7 +250,6 @@ class _VideoCallViewState extends State<_VideoCallView> {
             const SizedBox(height: 24.0),
             Text('Waiting for $userName to join...', style: AppTypography.titleLarge()),
             const SizedBox(height: 12.0),
-            // Animated loading indicator
             SizedBox(
               width: 24.0,
               height: 24.0,
@@ -283,7 +268,6 @@ class _VideoCallViewState extends State<_VideoCallView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Profile avatar
             Container(
               width: 120.0,
               height: 120.0,
@@ -314,7 +298,6 @@ class _VideoCallViewState extends State<_VideoCallView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Profile avatar with different styling
             Container(
               width: 120.0,
               height: 120.0,
@@ -368,12 +351,6 @@ class _VideoCallViewState extends State<_VideoCallView> {
               ],
             ),
           ),
-          // IconButtonWidget(
-          //   icon: Icons.info_outline,
-          //   onPressed: () {},
-          //   backgroundColor: AppColors.surface.withOpacity(0.6),
-          //   iconColor: AppColors.onSurface,
-          // ),
         ],
       ),
     );

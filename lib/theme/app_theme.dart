@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'app_colors.dart';
 import 'app_typography.dart';
 
-/// The Hyper-Focused Lens Theme
-/// Editorial Utility for Professional Video Communication
 class AppTheme {
   AppTheme._();
 
@@ -14,7 +12,6 @@ class AppTheme {
       brightness: Brightness.dark,
       fontFamily: AppTypography.fontFamily,
 
-      // Color Scheme
       colorScheme: const ColorScheme.dark(
         surface: AppColors.surface,
         onSurface: AppColors.onSurface,
@@ -37,10 +34,8 @@ class AppTheme {
         outlineVariant: AppColors.outlineVariant,
       ),
 
-      // Scaffold
       scaffoldBackgroundColor: AppColors.surface,
 
-      // App Bar
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.onSurface,
@@ -49,7 +44,6 @@ class AppTheme {
         titleTextStyle: AppTypography.headlineSmall(),
       ),
 
-      // Text Theme
       textTheme: TextTheme(
         displayLarge: AppTypography.displayLarge(),
         displayMedium: AppTypography.displayMedium(),
@@ -62,7 +56,6 @@ class AppTheme {
         bodySmall: AppTypography.bodySmall(),
       ),
 
-      // Card Theme - Tonal Layering (No borders)
       cardTheme: CardThemeData(
         color: AppColors.surfaceContainerLow,
         elevation: 0,
@@ -72,7 +65,6 @@ class AppTheme {
         margin: EdgeInsets.zero,
       ),
 
-      // Input Decoration - No borders, background shifts
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceContainerHighest,
@@ -98,7 +90,6 @@ class AppTheme {
         hintStyle: AppTypography.bodyMediumSecondary(),
       ),
 
-      // Elevated Button - Primary Actions
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.tertiaryContainer,
@@ -116,7 +107,6 @@ class AppTheme {
         ),
       ),
 
-      // Text Button - Utility actions
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.onSurface,
@@ -124,7 +114,6 @@ class AppTheme {
         ),
       ),
 
-      // Icon Button - Call controls
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
           foregroundColor: AppColors.onSurface,
@@ -132,7 +121,6 @@ class AppTheme {
         ),
       ),
 
-      // Floating Action Button - End call button
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.tertiaryContainer,
         foregroundColor: AppColors.onTertiaryContainer,
@@ -144,14 +132,12 @@ class AppTheme {
         ),
       ),
 
-      // Divider
       dividerTheme: DividerThemeData(
         color: AppColors.ghostBorder,
         thickness: 0,
         space: 8.0,
       ),
 
-      // Dialog
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surfaceContainerHigh,
         elevation: 0,
@@ -160,7 +146,6 @@ class AppTheme {
         ),
       ),
 
-      // Bottom Sheet
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.surfaceContainerHigh,
         modalBackgroundColor: AppColors.surfaceContainerHigh,
@@ -172,7 +157,6 @@ class AppTheme {
         ),
       ),
 
-      // Snackbar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.surfaceContainerHighest,
         contentTextStyle: AppTypography.bodyMedium(),
