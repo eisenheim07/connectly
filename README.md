@@ -1,5 +1,7 @@
 # Connectly - Video Conferencing App
 
+> **⚠️ SECURITY NOTICE**: The `lib/utils/app_constants.dart` file is NOT included in the Git repository as it contains sensitive API endpoints and configuration. You must create this file locally before running the project.
+
 A Flutter-based video conferencing application powered by Amazon Chime SDK, designed for professional clarity and reliable communication.
 
 ## Overview
@@ -173,11 +175,40 @@ lib/
 
 ## Configuration
 
-### API Endpoint
-Update in `lib/utils/app_constants.dart`:
+### Required: Create app_constants.dart
+The `lib/utils/app_constants.dart` file is excluded from Git for security reasons. Create it manually:
+
+**File**: `lib/utils/app_constants.dart`
 ```dart
-static const String baseUrl = 'YOUR_API_URL';
+import 'package:flutter/material.dart';
+
+class AppConstants {
+  AppConstants._();
+
+  // API Configuration
+  static const String baseUrl = 'YOUR_API_ENDPOINT_HERE';
+  
+  // User Types
+  static const String userTypeAgent = 'agent';
+  static const String userTypeClient = 'client';
+  
+  // Utility Methods
+  static void getKeyboardClose(BuildContext context) {
+    FocusScope.of(context).unfocus();
+  }
+}
 ```
+
+**Important**: 
+- Replace `YOUR_API_ENDPOINT_HERE` with your actual API URL
+- Never commit this file to version control
+- Add to `.gitignore`: `lib/utils/app_constants.dart`
+
+### API Endpoint
+The base URL should point to your backend API that handles:
+- Meeting creation (POST `/meetings`)
+- Meeting joining (POST `/meetings/join`)
+- Returns Amazon Chime meeting configuration
 
 ### Meeting Types
 - `userTypeAgent`: Agent role
