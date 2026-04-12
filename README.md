@@ -214,6 +214,50 @@ The base URL should point to your backend API that handles:
 - `userTypeAgent`: Agent role
 - `userTypeClient`: Client role
 
+## Permissions
+
+The app requires the following permissions to function properly:
+
+### Android Permissions
+Already configured in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<!-- Camera permission for video calls -->
+<uses-permission android:name="android.permission.CAMERA" />
+
+<!-- Microphone permission for audio calls -->
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+<!-- Internet permission for API calls and video streaming -->
+<uses-permission android:name="android.permission.INTERNET" />
+
+<!-- Network state permission for connectivity monitoring -->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+<!-- Camera features -->
+<uses-feature android:name="android.hardware.camera" android:required="false" />
+<uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+```
+
+### iOS Permissions
+Configure in `ios/Runner/Info.plist`:
+
+```xml
+<!-- Camera permission -->
+<key>NSCameraUsageDescription</key>
+<string>Connectly needs access to your camera for video calls</string>
+
+<!-- Microphone permission -->
+<key>NSMicrophoneUsageDescription</key>
+<string>Connectly needs access to your microphone for audio calls</string>
+```
+
+### Runtime Permission Handling
+The app uses `permission_handler` package to request permissions at runtime:
+- Camera and microphone permissions are requested on the Permission Screen
+- Users must grant both permissions to proceed to the Meeting Screen
+- Permissions can be managed in device settings if denied
+
 ## Build & Run
 
 ### Prerequisites
