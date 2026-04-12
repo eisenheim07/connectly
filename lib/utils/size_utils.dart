@@ -10,9 +10,7 @@ class SizeUtils {
     final mediaQuery = MediaQuery.of(context);
     width = mediaQuery.size.width;
     height = mediaQuery.size.height;
-    
-    // Calculate scale factor based on a reference width (375 = iPhone SE/standard mobile)
-    // Clamp between 0.85 and 1.15 to prevent extreme scaling
+
     scaleFactor = (width / 375).clamp(0.85, 1.15);
   }
 

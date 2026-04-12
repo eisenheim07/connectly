@@ -39,7 +39,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Allow back to close app from home screen
         return true;
       },
       child: GestureDetector(
@@ -175,7 +174,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
                         final audioHostUrl = state.meetingResponse.data.meeting.mediaPlacement?.audioHostUrl ?? '';
                         final audioHostId = audioHostUrl.contains(':') ? audioHostUrl.split(':').first : audioHostUrl;
                         final copyText = '{"meetingId":"$meetingId","audioHostId":"$audioHostId"}';
-                        print("COPY_TEXT ===> $copyText");
 
                         Clipboard.setData(ClipboardData(text: copyText));
                         context.flushBarSuccessMessage(message: 'Meeting details copied to clipboard');

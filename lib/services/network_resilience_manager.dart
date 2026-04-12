@@ -24,7 +24,6 @@ class NetworkResilienceManager {
   Timer? _staleSessionTimer;
   bool _isReconnecting = false;
 
-  // Configuration
   static const int maxReconnectAttempts = 5;
   static const int baseRetryDelayMs = 1000; // 1 second
   static const int maxRetryDelayMs = 30000; // 30 seconds

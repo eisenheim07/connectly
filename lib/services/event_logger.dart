@@ -75,10 +75,8 @@ class EventLogger {
   final int _maxEvents = 50;
   final List<Function(ChimeEvent)> _listeners = [];
 
-  // Get all events
   List<ChimeEvent> get events => _events.toList();
 
-  // Add listener for real-time updates
   void addListener(Function(ChimeEvent) listener) {
     _listeners.add(listener);
   }
@@ -87,7 +85,6 @@ class EventLogger {
     _listeners.remove(listener);
   }
 
-  // Log event with crash-safe handling
   void log({
     required EventType type,
     required String message,
@@ -106,36 +103,20 @@ class EventLogger {
         stackTrace: stackTrace,
       );
 
-      // Add to queue
       _events.addLast(event);
 
-      // Keep only last 50 events
       if (_events.length > _maxEvents) {
         _events.removeFirst();
       }
 
-      // Print to console in debug mode
-      if (kDebugMode) {
-        print('🔔 $event');
-        if (metadata != null) {
-          print('   Metadata: $metadata');
-        }
-      }
-
-      // Notify listeners (crash-safe)
       for (var listener in _listeners) {
         try {
           listener(event);
-        } catch (e) {
-          debugPrint('Error in event listener: $e');
-        }
+        } catch (e) {}
       }
-    } catch (e) {
-      debugPrint('Failed to log event: $e');
-    }
+    } catch (e) {}
   }
 
-  // Convenience methods
   void logInfo(String message, {Map<String, dynamic>? metadata}) {
     log(type: EventType.info, message: message, metadata: metadata, severity: ErrorSeverity.info);
   }
@@ -152,12 +133,10 @@ class EventLogger {
     log(type: EventType.error, message: message, metadata: metadata, severity: ErrorSeverity.critical, stackTrace: stackTrace);
   }
 
-  // Clear all events
   void clear() {
     _events.clear();
   }
 
-  // Export events as JSON
   List<Map<String, dynamic>> exportEvents() {
     return _events.map((e) => e.toJson()).toList();
   }

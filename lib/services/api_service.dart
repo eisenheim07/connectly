@@ -19,7 +19,6 @@ class ApiService {
       ),
     );
 
-    // Add pretty logger for API debugging
     _dio.interceptors.add(
       PrettyDioLogger(
         requestHeader: true,

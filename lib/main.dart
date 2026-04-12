@@ -10,7 +10,6 @@ import 'cubits/permission_cubit.dart';
 import 'cubits/connectivity_cubit.dart';
 import 'widgets/connectivity_wrapper.dart';
 
-// Global navigator key to access navigator from anywhere
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
@@ -42,7 +41,6 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.darkTheme,
             builder: (builderContext, child) {
               SizeUtils.init(builderContext);
-              // Limit text scale to prevent text from being too large on different devices
               final mediaQuery = MediaQuery.of(builderContext);
               final constrainedTextScale = mediaQuery.textScaler.clamp(
                 minScaleFactor: 0.8,

@@ -3,7 +3,6 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../utils/size_utils.dart';
 
-/// Primary Button - Solid background with high emphasis
 class PrimaryButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -85,7 +84,6 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
-/// Outlined Button - Transparent background with border
 class OutlinedButtonWidget extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -171,7 +169,6 @@ class OutlinedButtonWidget extends StatelessWidget {
   }
 }
 
-/// Text Button - No background, just text
 class TextButtonWidget extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -199,7 +196,6 @@ class TextButtonWidget extends StatelessWidget {
   }
 }
 
-/// Icon Button - Circular button with icon only
 class IconButtonWidget extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
@@ -228,7 +224,6 @@ class IconButtonWidget extends StatelessWidget {
   }
 }
 
-/// Permission Button - Special button for permission cards
 class PermissionButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -270,7 +265,6 @@ class PermissionButton extends StatelessWidget {
   }
 }
 
-/// Danger Button - Red background for destructive actions
 class DangerButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;

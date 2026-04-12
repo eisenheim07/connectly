@@ -30,7 +30,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Test 1: Late Join
   void testLateJoin() {
     _logger.log(
       type: EventType.info,
@@ -56,7 +55,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Test 2: Camera Toggle
   void testCameraToggle() {
     _logger.log(
       type: EventType.info,
@@ -80,7 +78,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Test 3: Network Loss
   void testNetworkLoss() {
     _logger.log(
       type: EventType.info,
@@ -125,7 +122,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Test 4: App Background
   void testAppBackground() {
     _logger.log(
       type: EventType.info,
@@ -177,7 +173,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Test 5: Leave & Rejoin
   void testLeaveRejoin() {
     _logger.log(
       type: EventType.info,
@@ -215,7 +210,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Test 6: Permission Flow
   void testPermissionFlow() {
     _logger.log(
       type: EventType.info,
@@ -262,7 +256,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Test 7: Poor Connection
   void testPoorConnection() {
     _logger.log(
       type: EventType.info,
@@ -291,7 +284,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Test 8: Duplicate Reconnect
   void testDuplicateReconnect() {
     _logger.log(
       type: EventType.info,
@@ -327,7 +319,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
     });
   }
 
-  // Run all tests sequentially
   Future<void> runAllTests() async {
     final tests = [
       testLateJoin,
@@ -342,7 +333,6 @@ class TestScenarioCubit extends Cubit<TestScenarioState> {
 
     for (var test in tests) {
       test();
-      // Wait for test to complete
       await Future.delayed(Duration(seconds: (state as TestScenarioRunning).countdown + 2));
     }
 

@@ -29,9 +29,6 @@ class MeetingRepository {
       meetingId: meetingId,
     );
 
-    print("CLIENT 1.0 ===>>> $clientResponse");
-
-    // Parse the MediaPlacement JSON
     try {
       final mediaPlacementData = json.decode(mediaPlacementJson) as Map<String, dynamic>;
       final mediaPlacement = MediaPlacement.fromJson(mediaPlacementData);
@@ -77,8 +74,6 @@ class MeetingRepository {
         meetingId: meetingId,
       );
 
-      print("CLIENT 1.1 ===>>> $clientResponse");
-
       // Parse the meeting object from the pasted response
       final meeting = Meeting.fromJson(meetingData);
       
@@ -98,26 +93,16 @@ class MeetingRepository {
 
   Future<MeetingResponse> joinWithMeetingDetails(String meetingDetailsJson) async {
     try {
-      // Parse the meeting details JSON
       final details = json.decode(meetingDetailsJson) as Map<String, dynamic>;
       final meetingId = details['meetingId'] as String;
       final audioHostId = details['audioHostId'] as String;
-      
-      print('🔧 Reconstructing MediaPlacement:');
-      print('   Meeting ID: $meetingId');
-      print('   Audio Host ID: $audioHostId');
 
-      // Get client token from API
       final clientResponse = await _apiService.joinMeeting(
         userType: AppConstants.userTypeClient,
         meetingId: meetingId,
       );
 
-      print("CLIENT 1.2 ===>>> $clientResponse");
-
-      // Extract media server identifier from audioHostId (e.g., m1, m2, m3)
-      // audioHostId format: "8ab31f3854e3b75f4dd89b89c25ce8b7.k.m1.as1.app.chime.aws"
-      String mediaServer = 'm1'; // default
+      String mediaServer = 'm1';
       if (audioHostId.contains('.k.m')) {
         final parts = audioHostId.split('.k.m');
         if (parts.length > 1) {
@@ -126,10 +111,6 @@ class MeetingRepository {
         }
       }
 
-      print('   Media Server: $mediaServer');
-
-      // Reconstruct MediaPlacement using the pattern
-      // audioHostId already contains full domain, just add port
       final mediaPlacement = MediaPlacement(
         audioHostUrl: '$audioHostId.k.m1.as1.app.chime.aws:3478',
         audioFallbackUrl: 'wss://wss.k.$mediaServer.as1.app.chime.aws:443/calls/$meetingId',
@@ -140,12 +121,7 @@ class MeetingRepository {
         screenSharingUrl: 'wss://bitpw.$mediaServer.as1.app.chime.aws:443/v2/screen/$meetingId',
         eventIngestionUrl: 'https://data.svc.as1.ingest.chime.aws/v1/client-events',
       );
-      
-      print('   ✅ MediaPlacement reconstructed:');
-      print('      audioHostUrl: ${mediaPlacement.audioHostUrl}');
-      print('      signalingUrl: ${mediaPlacement.signalingUrl}');
 
-      // Create complete meeting object
       final completeMeeting = Meeting(
         meetingId: meetingId,
         externalMeetingId: clientResponse.data.meeting.externalMeetingId,
@@ -153,7 +129,6 @@ class MeetingRepository {
         mediaPlacement: mediaPlacement,
       );
       
-      // Return response with complete meeting config
       return MeetingResponse(
         status: clientResponse.status,
         message: 'Joined meeting successfully',
@@ -163,7 +138,6 @@ class MeetingRepository {
         ),
       );
     } catch (e) {
-      print('❌ Error in joinWithMeetingDetails: $e');
       throw Exception('Invalid meeting details format: $e\n\nExpected: {"meetingId":"...","audioHostId":"..."}');
     }
   }
